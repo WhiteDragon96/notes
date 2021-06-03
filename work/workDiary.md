@@ -1,0 +1,2 @@
+- 使用redis缓存登录次数+过期时间，限制用户输入密码次数过多，防止暴力破解。
+- aspect配合EventListener，自定义ApiLog完成注解加log。

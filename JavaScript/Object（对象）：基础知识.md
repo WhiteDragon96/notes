@@ -1,0 +1,142 @@
+[toc]
+## Object（对象）：基础知识
+
+### 对象
+我们可以通过使用带有可选 属性列表 的花括号 {…} 来创建对象。一个属性就是一个键值对（“key: value”），其中键（key）是一个字符串（也叫做属性名），值（value）可以是任何值。
+  ```JavaScript
+        let user = new Object(); // “构造函数” 的语法
+        let user = {     // 一个对象
+            name: "John",  // 键 "name"，值 "John"
+            age: 30,        // 键 "age"，值 30
+            "like bird" : true,
+        };
+  ```
+
+属性有键（或者也可以叫做“名字”或“标识符”），位于冒号 ":" 的前面，值在冒号的右边。
+
+在 user 对象中，有两个属性：
+
+1. 第一个的键是 "name"，值是 "John"。
+2. 第二个的键是 "age"，值是 30。
+
+#### 方括号
+对于多词属性，点操作就不能用了：
+  ```JavaScript
+    // 这将提示有语法错误
+    user.likes birds = true
+  ```
+
+  ```JavaScript
+    有另一种方法，就是使用方括号，可用于任何字符串：
+
+    let user = {};
+
+    // 设置
+    user["likes birds"] = true;
+
+    // 读取
+    alert(user["likes birds"]); // true
+
+    // 删除
+    delete user["likes birds"];
+  ```
+
+在这里，变量 key 可以是程序运行时计算得到的，也可以是根据用户的输入得到的。然后我们可以用它来访问属性。这给了我们很大的灵活性。
+  ```JavaScript
+    let user = {
+    name: "John",
+    age: 30
+    };
+
+    let key = prompt("What do you want to know about the user?", "name");
+
+    // 访问变量
+    alert( user[key] ); // John（如果输入 "name"）
+    //点符号不能以类似的方式使用：
+    alert( user.key ) // undefined
+  ```
+#### 计算属性
+当创建一个对象时，我们可以在对象字面量中使用方括号。这叫做 计算属性。
+  ```JavaScript
+    let fruit = prompt("Which fruit to buy?", "apple");
+
+    let bag = {
+    [fruit]: 5, // 属性名是从 fruit 变量中得到的
+    };
+
+    alert( bag.apple ); // 5 如果 fruit="apple"
+  ```
+
+方括号比点符号更强大。它允许任何属性名和变量，但写起来也更加麻烦。
+
+所以，大部分时间里，当属性名是已知且简单的时候，就使用点符号。如果我们需要一些更复杂的内容，那么就用方括号。
+
+### 属性值简写
+在实际开发中，我们通常用已存在的变量当做属性名。
+
+  ```JavaScript
+    <script>
+        function makeUser(name,age){
+            return{
+                name: name,
+                age: age,
+                // 其他属性
+            }
+        }
+        let user = makeUser("John",18)
+        console.log(user) //{name: "John", age: 18}
+    </script>
+  ```
+在上面的例子中，属性名跟变量名一样。这种通过变量生成属性的应用场景很常见，在这有一种特殊的 属性值缩写 方法，使属性名变得更短。
+
+可以用 name 来代替 name:name 像下面那样：
+  ```JavaScript
+    function makeUser(name, age) {
+    return {
+        name, // 与 name: name 相同
+        age,  // 与 age: age 相同
+        // ...
+    };
+    }
+  ```
+
+### 属性存在性测试，“in” 操作符
+相比于其他语言，JavaScript 的对象有一个需要注意的特性：能够被访问任何属性。即使属性不存在也不会报错！
+
+读取不存在的属性只会得到 undefined。所以我们可以很容易地判断一个属性是否存在：
+  ```JavaScript
+    let user = {};
+    console.log(user.age === undefined) //true
+  ```
+这里还有一个特别的，检查属性是否存在的操作符 "in"。
+
+语法是：
+  ```JavaScript
+    "key" in object
+    let user = {
+            name: "White",
+            age: 8
+        };
+        console.log("name" in user) //true
+        console.log("white" in user) //fasle
+  ```
+
+### “for…in” 循环
+为了遍历一个对象的所有键（key），可以使用一个特殊形式的循环：for..in。这跟我们在前面学到的 for(;;) 循环是完全不一样的东西。
+  ```JavaScript
+    "key" in object
+    let user = {
+            name: "White",
+            age: 8
+        };
+        for(key in user){
+            //key
+            console.log(key) // name,age
+            // value
+            console.log(user[key])// White,8
+        }
+  ```
+### 像对象一样排序
+整数属性会被进行排序，其他属性则按照创建的顺序显示
+
+### 对象引用和复制
