@@ -1,6 +1,18 @@
 <!-- <table><tr><td bgcolor=green> -->
 
-[toc]
+- [1.概述](#1概述)
+- [2. 旧的时间API（java8之前）的问题](#2-旧的时间apijava8之前的问题)
+- [3. 使用LocalDate，LocalTime和LocalDateTime](#3-使用localdatelocaltime和localdatetime)
+  - [3.1 使用LocalDate](#31-使用localdate)
+  - [3.2 使用LocalTime](#32-使用localtime)
+  - [3.3 使用LocalDateTime](#33-使用localdatetime)
+- [4. 使用ZonedDateTime API](#4-使用zoneddatetime-api)
+- [5.使用Period和Duration](#5使用period和duration)
+  - [5.1。使用Period](#51使用period)
+  - [5.2 使用Duration](#52-使用duration)
+- [6.与日期和日历的兼容性](#6与日期和日历的兼容性)
+- [7. 日期和时间格式化](#7-日期和时间格式化)
+
 ### 1.概述
 Java 8为Date和Time引入了新的API，以解决旧java.util.Date和java.util.Calendar的缺点。
 

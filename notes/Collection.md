@@ -1,4 +1,10 @@
-[TOC]
+- [List 、Set、 Map有什么区别和联系](#list-set-map有什么区别和联系)
+- [集合中接口和类的关系](#集合中接口和类的关系)
+  - [Iterator：所有集合类都实现了Iterator接口](#iterator所有集合类都实现了iterator接口)
+- [层次图](#层次图)
+- [List](#list)
+- [Set](#set)
+
 
 ### List 、Set、 Map有什么区别和联系
 

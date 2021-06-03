@@ -1,5 +1,13 @@
-[toc]
-
+- [SQL](#sql)
+  - [DISTINCT 去重](#distinct-去重)
+  - [GROUP BY](#group-by)
+    - [HAVING 可以指定筛选](#having-可以指定筛选)
+    - [配合聚合函数](#配合聚合函数)
+  - [数据库批量插入](#数据库批量插入)
+- [Aspect](#aspect)
+- [Redis](#redis)
+- [设计模式](#设计模式)
+  - [建造者模式](#建造者模式)
 ### SQL
 #### DISTINCT 去重
 - distinct 只能放在所有字段前面，并且后面的字段都会生效

@@ -1,4 +1,13 @@
 [TOC]
+- [什么是Stream](#什么是stream)
+- [流的构成](#流的构成)
+- [流的操作类型分为两种：](#流的操作类型分为两种)
+- [流的构造与转换](#流的构造与转换)
+  - [构造流的几种常见方法](#构造流的几种常见方法)
+  - [流转换为其它数据结构](#流转换为其它数据结构)
+- [流的操作](#流的操作)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 ### 什么是Stream
    &emsp;&emsp; stream是对集合(Collection)对象功能的增强，它提供串行和并行两种模式进行汇聚操作，并发模式能够充分利用多核处理器的优势，使用 fork/join 并行方式来拆分任务和加速处理过程。
