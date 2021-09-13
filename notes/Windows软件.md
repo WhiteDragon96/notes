@@ -11,5 +11,5 @@
 <br/>
 
 ### 下载源
-- [腾讯下载中心](https://pc.qq.com/detail),可以直达官网
+- [腾讯下载中心](https://pc.qq.com),可以直达官网
 
