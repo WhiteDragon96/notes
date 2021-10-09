@@ -7,11 +7,6 @@
 top-notice.vue 有记录
 
 
-## 书单
-《把时间当做朋友》
-《被讨厌的勇气》
-《非暴力沟通》
-
 CREATE TABLE `taitan_aco_sync_log` (
   `id` bigint(64) NOT NULL COMMENT '主键',
   `log_type` int(10) DEFAULT NULL COMMENT '许可类型 1-猎捕许可、2-繁育许可、3-动物利用许可、4-进出口许可',
@@ -47,3 +42,19 @@ FeignClient注解被@Target(ElementType.TYPE)修饰，表示FeignClient注解的
 
 
 自带service没结果查出来是个null,mapper没结果会是个空的对象
+
+### select...for update使用方法
+select * from t for update 会等待行锁释放之后，返回查询结果。
+select * from t for update nowait 不等待行锁释放，提示锁冲突，不返回结果
+select * from t for update wait 5 等待5秒，若行锁仍未释放，则提示锁冲突，不返回结果
+select * from t for update skip locked 查询返回查询结果，但忽略有行锁的记录
+
+### 判断一个状态是否包含
+```Java
+  Optional<AnimalChangeReasonEnum> any = Arrays.stream(AnimalChangeReasonEnum.values())
+				.filter(acre -> acre.getReason().equals(animal.getReason()))
+				.findAny();
+			if (!any.isPresent()) {
+				throw new Exception("没有预料到的利用类型");
+			}
+```

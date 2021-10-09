@@ -10,6 +10,7 @@
   - [忽略已加入到版本库中的文件](#忽略已加入到版本库中的文件)
   - [取消忽略文件](#取消忽略文件)
   - [拉取、上传免密码](#拉取上传免密码)
+  - [git统计](#git统计)
 
 ## 分支操作
 
@@ -82,3 +83,25 @@ git update-index --no-assume-unchanged file
 ### 拉取、上传免密码
 
 git config --global credential.helper store
+
+
+### git统计
+
+1. 统计代码提交行数：
+```git
+git log --author='username' --pretty=tformat: --numstat | awk '{add += $1; subs += $2; loc += $1 - $2 } END { printf "添加了%s,删除了%s,合计%s\n", add, subs, loc }' -
+```
+2. 统计每个人提交行数
+```Java
+git log --format='%aN' | sort -u | while read name; do echo -en "$name\t"; git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }' -; done
+```
+
+3. 仓库提交排名：
+```Java
+git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r | head -n 5
+```
+
+4. 统计git提交时间段
+```Java
+git log --date=format:%H --after='2021-01-01 00:00:00' --until='2021-10-01 00:00:00' |grep "Date:"|awk '{print $2}'|sort |uniq -c
+```

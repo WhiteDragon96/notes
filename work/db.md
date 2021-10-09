@@ -89,3 +89,8 @@ List<SecManage> secManages = secManageMapper.selectList(null);
 		List<Long> secManageHuntId = secManages.stream().map(SecManage::getHuntId).collect(Collectors.toList());
 		List<Long> collect1 = collect.stream().filter(secManageHuntId::contains).collect(Collectors.toList());
 //		List<Long> collect2 = secManages.stream().map(SecManage::getHuntId).collect(Collectors.toList());
+
+
+-- 繁育许可新增所属机构字段
+ALTER TABLE `shengting_aco`.`aco_breed` 
+ADD COLUMN `affiliation_dept` bigint(64) NULL COMMENT '复核完所属机构' AFTER `create_dept`;
