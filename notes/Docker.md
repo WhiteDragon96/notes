@@ -1,5 +1,7 @@
 
 
+
+
 ### docker安装
 
 #### docker的基本组成
@@ -434,9 +436,411 @@ UnionS(联合文件系统): Union文件系统( UnionFS)是一种分层、轻量�
 
 ----
 
+> 特点
+
+Docker镜像都只是只读的，当容器启动时，一个新的科协层被加载到镜像的顶部！
+
+这一层就是我们通常说的容器层，容器之下都叫镜像层！
+
+![image-20211025211733032](C:\Users\White\AppData\Roaming\Typora\typora-user-images\image-20211025211733032.png)
+
+#### commmit镜像
+
+```shell
+docker commit 提交容器成为一个新的副本
+ 
+docker commit -m="提交的描述信息" -a="作者" 容器id 目标镜像名: [TAG]
+```
+
+实战测试
+
+```shell
+# 1.启动一个默认的tomcat
+
+# 2.发现这个默认的tomcat 是没有 webapps应用， 镜像的原因，官方的镜像默认 webapps下面是没有文件的！
+
+# 3.自己拷贝进去基本的文件
+
+# 4.将操作过的容器通过commit提交为一个镜像！我们以后就是使用我们修改过的镜像即可
+
+[root@iZbp1et2qekjwuvfpiokc4Z ~]# docker commit -a="tang" -m="add webapps" 38066f82831a tomcat01:1.0
+sha256:2f06941af778f40f9a190e66ba07f0039318fa8b72d1096b8762b3dbf2613c53
+[root@iZbp1et2qekjwuvfpiokc4Z ~]# docker images
+REPOSITORY                     TAG       IMAGE ID       CREATED          SIZE
+tomcat01                       1.0       2f06941af778   4 seconds ago    684MB
+tomcat                         latest    b3b4c471f854   45 seconds ago   684MB
+```
+
+### 容器数据卷
+
+---
+
+#### 什么时容器数据卷
+
+----
+
+**docker的理念回顾**
+
+将应用和环境打包成一个镜像！
+
+容器之间可以有一个数据共享的技术！Docker容器中产生的数据，同步到本地！这就是卷技术！目录的挂载，将我们容器内的目录，挂载到Linux上面！
+
+**容器的持久化和同步操作！容器间也是可以数据共享的！**
+
+#### 使用数据卷
+
+> 方式一：直接使用命令来挂载 -v
+
+```shell
+docker run -v 主机目录：容器内目录
+
+# 测试
+[root@iZbp1et2qekjwuvfpiokc4Z tangchuansong]# docker run -d -it --name centos -v /home/tangchuansong/test:/home centos
+
+# 启动起来时候我们可以通过 docker inspect 容器id 查看容器信息
+
+# 双向绑定，互相同步
+# 容器停止后也会同步进去
+```
+
+**好处：**以后我们修改只需要在本地修改即可，容器内会自动同步！
+
+#### 实战：安装 MySQL
+
+```shell
+# 获取镜像 docker pull mysql
+
+# 议论性容器，需要做数据挂载！ #安装启动mysql,需要配置密码的，这是要注意点！
+# 官方测试：
+docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
+
+# 启动自己的
+-d 后台运行
+-p 端口映射
+-v 卷挂宅
+-e 环境配置
+[root@iZbp1et2qekjwuvfpiokc4Z test]# docker run  -d -p 8888:3306 -v /home/mysql/conf:/etc/mysql/conf.d -v /home/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 --name mysql01 mysql
+
+# 启动成功后，我们使用本地连接测试下
+# 在本地新建一个数据库，看有没有
+```
+
+删除容器，本地数据是不会丢失的
 
 
 
+#### 具名和匿名挂载
+
+```shell
+# 匿名挂载
+-v 容器内路径！
+docker run -d -P --name nginx01 -v /ect/nginx nginx
+
+# 查看所有卷的情况 volume 的情况
+[root@iZbp1et2qekjwuvfpiokc4Z mysql]# docker volume ls
+DRIVER    VOLUME NAME
+local     2c8cd9f5fdc9a925ae2acaefecfb5e973cd32ee2968323c12643d7bcbfca43bb
+local     3f1eba3ff186429f2749479e17746225b274d5493cf396784c67fbce3d55e689
+
+# 这种就是匿名挂载，我们在 -v 只写了容器内的路径，没有写容器外的路径！
+
+# 具名挂载
+[root@iZbp1et2qekjwuvfpiokc4Z mysql]# docker run -d -P --name nginx02 -v juming:/ect/nginx nginx
+[root@iZbp1et2qekjwuvfpiokc4Z mysql]# docker volume ls
+DRIVER    VOLUME NAME
+local     2c8cd9f5fdc9a925ae2acaefecfb5e973cd32ee2968323c12643d7bcbfca43bb
+local     juming
+
+# 通过 -v 卷名：容器内路径
+# 查看一下这个卷
+[root@iZbp1et2qekjwuvfpiokc4Z mysql]# docker volume inspect juming
+[
+    {
+        "CreatedAt": "2021-10-25T22:14:49+08:00",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/juming/_data",
+        "Name": "juming",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+```
+
+所有docker容器内的卷，没有指定目录的情况下都在 /var/lib/docker/volumes/xxx/_data
+
+我们荣国具名挂载可以方便找到我们的一个卷，大多数情况下使用的`具名挂载`
+
+``` shell
+如何确定时具名挂载还是匿名挂载，还是指定路径挂载
+-v 容器内路径		# 匿名挂载
+-v 卷名：容器内路径	  # 具名挂载
+-v 本地路径：容器内路径# 指定路径挂载
+```
+
+拓展：
+
+```shell
+# 通过 -v 容器内路径: ro rw 改变读写权限
+ro	readonly		# 只读
+rw	readwrite		# 可读可写
+
+# 一旦这个设置了容器权限，容器对我们挂载出来的内容就有限定了！
+docker run -d -P --name nginx -v juming:/etc/nginx:ro nginx
+
+# ro 说明这个路径只能通过宿主机来操作，容器内部时无法操作的！
+```
+
+
+
+#### 初识DockerFile
+
+---
+
+Dockerfile 就是用来构建docker 镜像的构建文件！命令脚本！
+
+通过这个脚本可以生成镜像，镜像是一层一层的，脚本一个个的命令，都是一层
+
+```shell
+# 创建一个dockerfile文件，名字可以随机取  建议dockerfile
+# 文件中的内容，指令(大写) 参数
+FROM centos
+VOLUME ["VOLUME01","VOLUME02"]
+CMD echo "--end---"
+CMD /bin/bash
+
+docker build -f dockerfile1 -t tang/centos:1.0 .
+
+# volume01、volume02也挂载出去了，通常会构建自己的镜像
+```
+
+
+
+#### 数据卷容器
+
+----
+
+多个mysql 同步数据！
+
+![image-20211025224838653](C:\Users\White\AppData\Roaming\Typora\typora-user-images\image-20211025224838653.png)
+
+
+
+#### 数据卷容器
+
+---
+
+
+
+多个mysql实现数据共享
+
+```shell
+# 命令 
+docker run -d --name 02 --volumes-form 01 mysql
+# 只会同步容器的挂载路径
+```
+
+
+
+![image-20211025230003644](C:\Users\White\AppData\Roaming\Typora\typora-user-images\image-20211025230003644.png)
+
+```shell
+docker run -d -p 3301:3306 -v /etc/mysql/conf.d -v /var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 --name mysql01 mysql
+
+docker run -d -p 3302:3306 -v /etc/mysql/conf.d -v /var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 --name mysql02 --volumes-form mysql01 mysql
+#这个时候可以实现两个容器数据同步
+```
+
+
+
+结论：
+
+容器之间配置信息的传递，数据卷容器的生命周期一直持续到没有容器使用为止
+
+### DockerFile
+
+----
+
+#### DockerFile介绍
+
+dockerfile 是用来构建docker 镜像的文件！命令参数脚本!
+
+构建步骤：
+
+1、编写一个dockerfile文件
+
+2、docker build 构建成为一个镜像
+
+3、docker run 运行镜像
+
+4、docker push 发布镜像(DockerHub、阿里云镜像仓库！)
+
+官方centos镜像
+
+```shell
+FROM scratch
+ADD centos-8-x86_64.tar.xz /
+LABEL org.label-schema.schema-version="1.0"     org.label-schema.name="CentOS Base Image"     org.label-schema.vendor="CentOS"     org.label-schema.license="GPLv2"     org.label-schema.build-date="20210915"
+CMD ["/bin/bash"]
+```
+
+#### DockerFile构建过程
+
+**基础知识：**
+
+1、每个保留关键字都必须是大写字幕
+
+2、执行从上到下顺序执行
+
+3、# 表示注释
+
+4、每一个指令都会创建提交一个新的镜像层，并提交！
+
+![](https://img0.baidu.com/it/u=3383571339,2436431860&fm=26&fmt=auto)
+
+DockerFile：构建文件，定义了一切的步骤，源代码
+
+DockerImages：通过DockerFile构建生成的镜像，最终发布和运行的产品！
+
+Docker容器：容器就是镜像运行起来提供服务器
+
+
+
+#### DockerFile指令
+
+---
+
+```shell
+FROM		# 基础敬故乡，一切从这里开始构建
+MAINTAINER	# 镜像是谁写的，姓名+邮箱
+RUN			# 镜像构建的时候需要运行的命令
+ADD			# 步骤：tomcat镜像，这个tomcat压缩包，添加内容
+WORKDIR		# 镜像的工作目录
+VOLUME		# 挂载的目录
+EXPOSE		# 保留端口配置
+CMD			# 指定这个容器启动的时候要运行的命令，只有最后一个会生效，可被替代
+ENTRYPOINT	# 指定这个容器启动的时候要运行的命令，可以追加命令
+ONBUILD		# 当构建一个被继承 DockerFIle 这个时候就会运行 ONBUILD 的指令。触发指令。
+COPY		# 雷士ADD，将我们文件拷贝到镜像中
+ENV			# 构建的时候设置环境环境变量！
+```
+
+![](https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fupload-images.jianshu.io%2Fupload_images%2F6567790-fff25499e56d7295.png&refer=http%3A%2F%2Fupload-images.jianshu.io&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1637937841&t=28094a10ac365ead6d4ab4970135f788)
+
+#### 实战测试
+
+> 创建一个自己的centos
+
+```shell
+# 1、编写dockerfile文件
+FROM centos
+MAINTAINER tang<1234@163.com>
+ENV MYPATH /usr/local
+WORKDIR $MYPATH
+RUN yum -y install vim
+RUN yum -y install net-tools
+
+EXPOSE 80
+CMD echo $MYPATH
+CMD echo "---end---"
+CMD /bin/bash
+# 2、编译dockerfile文件
+# 命令 docker build -f dockerfile文件路径 -t 镜像名:[tag] .
+```
+
+对比原来多了 vim
+
+我们可以列出本地镜像变更历史
+
+```shell
+[root@iZbp1et2qekjwuvfpiokc4Z dockerfile]# docker history mycentos:0.1 
+IMAGE          CREATED         CREATED BY                                      SIZE      COMMENT
+f5c5062c7f08   3 minutes ago   /bin/sh -c #(nop)  CMD ["/bin/sh" "-c" "/bin…   0B        
+dc400826c1c9   3 minutes ago   /bin/sh -c #(nop)  CMD ["/bin/sh" "-c" "echo…   0B        
+0afbb619c7e2   3 minutes ago   /bin/sh -c #(nop)  CMD ["/bin/sh" "-c" "echo…   0B        
+3d18feb7ce0c   3 minutes ago   /bin/sh -c #(nop)  EXPOSE 80                    0B        
+1f4c0b122f82   3 minutes ago   /bin/sh -c yum -y install net-tools             32.3MB    
+6c848c197865   4 minutes ago   /bin/sh -c yum -y install vim                   72.6MB    
+b32354dc2036   4 minutes ago   /bin/sh -c #(nop) WORKDIR /usr/local            0B        
+f99fdcfd2ebe   4 minutes ago   /bin/sh -c #(nop)  ENV MYPATH=/usr/local        0B        
+e4c939676af9   4 minutes ago   /bin/sh -c #(nop)  MAINTAINER tang<1234@163.…   0B        
+5d0da3dc9764   5 weeks ago     /bin/sh -c #(nop)  CMD ["/bin/bash"]            0B        
+<missing>      5 weeks ago     /bin/sh -c #(nop)  LABEL org.label-schema.sc…   0B        
+<missing>      5 weeks ago     /bin/sh -c #(nop) ADD file:805cb5e15fb6e0bb0…   231MB 
+```
+
+> CMD 和 ENTRYPOINT 区别
+
+![image-20211027230745551](C:\Users\White\AppData\Roaming\Typora\typora-user-images\image-20211027230745551.png)
+
+#### 实战：Tomcat镜像
+
+1、准备镜像文件tomcat 压缩包，jdk的压缩包！
+
+2、编写dockerfile文件，官方命令`Dockerfile`，build会自动寻找这个文件，就不需要-f指定了！
+
+```shell
+FROM centos
+MAINTAINER tang
+#COPY dockerfile /usr/local/dockerfile
+ADD jdk-8u141-linux-x64.tar.gz /usr/local/
+ADD apache-tomcat-9.0.54.tar.gz /usr/local/
+RUN yum -y install vim
+
+ENV MYPATH /usr/local
+WORKDIR $MYPATH
+
+ENV JAVA_HOME /usr/local/jdk1.8.0_141
+ENV CLASSPATH $JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tool.jar
+ENV CATALINA_HOME /usr/local/apache-tomcat-9.0.54
+ENV CATALINA_BASE /usr/local/apache-tomcat-9.0.54
+ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin:$CATALINA_HOME/bin
+
+EXPOSE 80
+
+CMD /usr/local/apache-tomcat-9.0.54/bin/startup.sh && tail -f /usr/local/apache-tomcat-9.0.54/bin/logs/catalina.out
+```
+
+3、构建镜像
+
+```shell
+docker build -t diytomcat .
+```
+
+4、启动
+
+```shell
+docker run -d -p 8888:8080 --name tangtomcat -v /home/tangchuansong/build/tomcat/test:/usr/loca/apache-tomcat-9.0.54/webapps/test -v /home/tangchuansong/build/tomcat/tomcatlogs/:/usr/local/apache-tomcat-9.0.54、logs diytomcat
+```
+
+5、访问测试
+
+6、发布项目
+
+#### 发布自己的镜像
+
+> DockerHub
+
+1、地址https://hub.docker.com/ 注册自己的账号
+
+2、确定这个账号可以登录
+
+3、在我们服务器上提交自己的镜像
+
+4、登录完毕后就可以提交自己的镜像
+
+```shell
+# 登录
+docker login -u username
+# 提交
+docker push 镜像:[tag]
+```
+
+
+
+### Docker网络
+
+-----
 
 
 
