@@ -798,7 +798,7 @@ ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin:$CATALINA_HOME/bin
 
 EXPOSE 80
 
-CMD /usr/local/apache-tomcat-9.0.54/bin/startup.sh && tail -f /usr/local/apache-tomcat-9.0.54/bin/logs/catalina.out
+CMD /usr/local/apache-tomcat-9.0.54/bin/startup.sh && tail -f /usr/local/apache-tomcat-9.0.54/logs/catalina.out
 ```
 
 3、构建镜像
@@ -810,7 +810,7 @@ docker build -t diytomcat .
 4、启动
 
 ```shell
-docker run -d -p 8888:8080 --name tangtomcat -v /home/tangchuansong/build/tomcat/test:/usr/loca/apache-tomcat-9.0.54/webapps/test -v /home/tangchuansong/build/tomcat/tomcatlogs/:/usr/local/apache-tomcat-9.0.54、logs diytomcat
+docker run -d -p 8888:8080 --name tangtomcat -v /home/tangchuansong/build/tomcat/test:/usr/local/apache-tomcat-9.0.54/webapps/ROOT -v /home/tangchuansong/build/tomcat/tomcatlogs/:/usr/local/apache-tomcat-9.0.54/logs diytomcat
 ```
 
 5、访问测试
@@ -841,10 +841,6 @@ docker push 镜像:[tag]
 ### Docker网络
 
 -----
-
-
-
-
 
 
 

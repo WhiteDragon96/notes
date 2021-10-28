@@ -58,3 +58,10 @@ select * from t for update skip locked 查询返回查询结果，但忽略有�
 				throw new Exception("没有预料到的利用类型");
 			}
 ```
+
+实体类链式@Accessors(chain = true)
+
+工具类库：Guava，hutool
+
+wsl上Linux
+username:tangcs password 7167*****59

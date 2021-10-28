@@ -94,3 +94,78 @@ List<SecManage> secManages = secManageMapper.selectList(null);
 -- 繁育许可新增所属机构字段
 ALTER TABLE `shengting_aco`.`aco_breed` 
 ADD COLUMN `affiliation_dept` bigint(64) NULL COMMENT '复核完所属机构' AFTER `create_dept`;
+
+-- 猎捕许可添加字段
+ALTER TABLE `shengting_aco`.`aco_hunt` 
+ADD COLUMN `affiliation_dept` bigint(64) NULL COMMENT '复核完所属机构' AFTER `create_dept`;
+
+-- 繁育场变更基本信息表
+ALTER TABLE `shengting_aco`.`aco_breed_change_info`
+    ADD COLUMN `ywlsh` varchar(64) NULL COMMENT '外部业务流水号' AFTER `change_after_info`;
+
+    ALTER TABLE `shengting_aco`.`aco_breed_species` 
+MODIFY COLUMN `permit_count` int(16) NULL DEFAULT NULL COMMENT '准予数量，变更后准予数量' AFTER `ename`;
+
+ALTER TABLE `shengting_aco`.`aco_breed_change_info` 
+MODIFY COLUMN `breed_id` bigint(64) NULL DEFAULT NULL COMMENT '繁育许可id' AFTER `type`;
+
+ALTER TABLE `shengting_aco`.`aco_breed` 
+DROP COLUMN `is_capital`,
+DROP COLUMN `is_forage`,
+DROP COLUMN `is_second_level`,
+MODIFY COLUMN `purpose` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1' COMMENT '繁育目的' AFTER `is_facilities`,
+MODIFY COLUMN `apply_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '签发时间时间' AFTER `purpose`,
+MODIFY COLUMN `change_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '变更类型' AFTER `check_recode`;
+
+
+
+-- 繁育许可变更 造数据
+
+INSERT INTO `shengting_aco`.`aco_breed_change_info` ( `id`, `type`, `breed_id`, `change_before_info`, `change_after_info`, `ywlsh` )
+	(
+	SELECT
+		rand()* 1000000000000000 AS id,
+		'法人代表变更' AS type,
+		ab.id as breed_id,
+		ac.frdb as change_before_info,
+		ac.lxr as change_after_info,
+		ab.ywlsh as ywlsh 
+	FROM
+		aco_breed ab
+		INNER JOIN aco_company ac ON ab.rel_id = ac.id 
+	WHERE
+		ab.id = '1433052708935737345' 
+	);
+	
+INSERT INTO `shengting_aco`.`aco_breed_change_info` ( `id`, `type`, `breed_id`, `change_before_info`, `change_after_info`, `ywlsh` )
+(
+	SELECT
+		rand()* 1000000000000000 AS id,
+		'人工繁育场名称变更' AS type,
+		ab.id as breed_id,
+		ac.name as change_before_info,
+		'变更后名称' as change_after_info,
+		ab.ywlsh as ywlsh 
+	FROM
+		aco_breed ab
+		INNER JOIN aco_company ac ON ab.rel_id = ac.id 
+	WHERE
+		ab.id = '1433052708935737345' 
+	);
+
+INSERT INTO `shengting_aco`.`aco_breed_change_info` ( `id`, `type`, `breed_id`, `change_before_info`, `change_after_info`, `ywlsh` )
+(
+	SELECT
+		rand()* 1000000000000000 AS id,
+		'技术负责人变更' AS type,
+		ab.id as breed_id,
+		ab.technology_pic as change_before_info,
+		'变更后技术人' as change_after_info,
+		ab.ywlsh as ywlsh 
+	FROM
+		aco_breed ab
+		INNER JOIN aco_company ac ON ab.rel_id = ac.id 
+	WHERE
+		ab.id = '1433052708935737345' 
+	);
+
