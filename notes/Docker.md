@@ -836,15 +836,217 @@ docker login -u username
 docker push 镜像:[tag]
 ```
 
+> 阿里云镜像服务
 
+1、登录阿里云
+
+2、找到容器镜像服务
+
+3、创建命名空间
+
+4、创建容器镜像
+
+5、浏览阿里云信息
 
 ### Docker网络
 
 -----
 
+> 测试
+
+![image-20211028230118054](C:\Users\White\AppData\Roaming\Typora\typora-user-images\image-20211028230118054.png)
+
+三个网络
+
+```shell
+ # 问题：docker 是如何处理容器网络的访问的
+ 
+ # [root@iZbp1et2qekjwuvfpiokc4Z ~]# docker run -d -P --name tomcat01 tomcat
+
+# 查看容器的内部网络地址 ip addr
+```
+
+> 原理
+
+1、我们每启动一个docker容器，docker就会给docker容器分配一个ip，我们只要安装了docker，就会有一个网卡docker0桥接模式，使用的技术是evth-pair技术！
+
+2、在启动一个容器测试，发现又多了一对网卡
+
+```shell
+# 我们发现这歌容器带来网卡，都是一对对的
+# evth-pair 就是一堆的虚拟设备接口，他们都是成对出现的，一段连着协议，一段彼此相连
+# 正是因为有这个特性，evth-pair 充当一个桥梁，连接各种虚拟网络设备的
+# Openstac，Docker容器之间的连接，OVS的里拦截，都是使用evth-pair 技术
+```
+
+3、容器和容器之间是可以互相ping通的
+
+![image-20211028233851648](C:\Users\White\AppData\Roaming\Typora\typora-user-images\image-20211028233851648.png)
+
+ 结论：tomcat01 和 tomcat02 是共用一个路由器，docker0.
+
+所有的容器不指定网络的情况下，都是docker0路由的，docker会给我们的容器分配一个默认的可用IP
+
+> 小结
+>
+> 
+
+ Docker 使用的是Linux的桥接，宿主机中 是一个Docker容器的网桥 docker0
 
 
 
+Dokcer所有桥接都是内网，所以速度很快
+
+#### --link
+
+> 我们编写一个微服务，database url=ip:,项目不重启，数据库IP换掉了，我们希望可以处理这个问题，可以名字用名字来访问容器？
+
+```shell
+# 通过--link既可以解决网络联通问题
+docker run -d -P --name tomcat01 --link tomcat02 tomcat
+docker exec -it tomcat02 ping tomcat01
+
+# 反向不可以可以ping通
+docker exec -it tomcat01 ping tomcat02
+Net not know
+```
 
 
+
+#### 自定义网络
+
+---
+
+> 查看所有的docker网络
+
+```shell
+[root@iZbp1et2qekjwuvfpiokc4Z ~]# docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+d47fe38eca1b   bridge    bridge    local
+4b59f9e50a39   host      host      local
+642ff2faa589   none      null      local
+
+
+```
+
+**网络模式：**
+
+bridge：桥接docker（默认，自己创建也使用bridge 模式）
+
+none：不配网络
+
+host：和宿主机共享网络
+
+**测试**
+
+```shell
+# 我们直接启动的命令 --net bridge，而这个就是我们的docker0
+docker run -d -P --name centos01 centos
+docker run -d -P --name centos01 --net bridge centos
+
+# docker0特点，默认，域名不能访问，--link可以打通连接！
+
+# 我们可以自定义一个网络
+# --driver bridge 桥接
+# --subnet 192.168.0.0/16 192.168.0.2 - 192.168.255.255 子网地址
+# --gateway 192.168.0.1 网关
+[root@iZbp1et2qekjwuvfpiokc4Z ~]# docker network create --driver bridge ---subnet 192.168.0.0/16 --gateway 192.168.0.1 mynet
+1b166ec190eec708338492800d0f4e03f98769699aec75c7128d53ff6f1f5e57
+[root@iZbp1et2qekjwuvfpiokc4Z ~]# docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+d47fe38eca1b   bridge    bridge    local
+4b59f9e50a39   host      host      local
+1b166ec190ee   mynet     bridge    local
+642ff2faa589   none      null      local
+
+```
+
+自己的网络
+
+![image-20211101233001910](C:\Users\White\AppData\Roaming\Typora\typora-user-images\image-20211101233001910.png)
+
+```shell
+[root@iZbp1et2qekjwuvfpiokc4Z ~]# docker run -d -P --name tomcat01 --net mynet tomcat
+fd2cae0f65c2c73e65ab7d23ea47e8f52b5286336a3c2f079954d07245f75e35
+[root@iZbp1et2qekjwuvfpiokc4Z ~]# docker ps
+CONTAINER ID   IMAGE                          COMMAND                  CREATED         STATUS         PORTS                                         NAMES
+fd2cae0f65c2   tomcat                         "catalina.sh run"        5 seconds ago   Up 3 seconds   0.0.0.0:49158->8080/tcp, :::49158->8080/tcp   tomcat01
+a9b7ac5604d7   luminoleon/epicgames-claimer   "python3 -u main.py …"   8 days ago      Up 7 days                                                    epic
+[root@iZbp1et2qekjwuvfpiokc4Z ~]# docker run -d -P --name tomcat02 --net mynet tomcat
+841e7921091791e0a20b1dc8d83b4f0ceb8aba5032f07b2f876f5498abe5ca95
+[root@iZbp1et2qekjwuvfpiokc4Z ~]# docker network inspect mynet 
+[
+    {
+        "Name": "mynet",
+        "Id": "1b166ec190eec708338492800d0f4e03f98769699aec75c7128d53ff6f1f5e57",
+        "Created": "2021-11-01T23:25:41.037877687+08:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "192.168.0.0/16",
+                    "Gateway": "192.168.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "841e7921091791e0a20b1dc8d83b4f0ceb8aba5032f07b2f876f5498abe5ca95": {
+                "Name": "tomcat02",
+                "EndpointID": "ed89feba1fa1c78830d78505fbc973fc9fed333066d21f3796c3d443bcdce87e",
+                "MacAddress": "02:42:c0:a8:00:03",
+                "IPv4Address": "192.168.0.3/16",
+                "IPv6Address": ""
+            },
+            "fd2cae0f65c2c73e65ab7d23ea47e8f52b5286336a3c2f079954d07245f75e35": {
+                "Name": "tomcat01",
+                "EndpointID": "54fc41048c143ce72e66091e1b1ce0367ba76d0080b3fe35d4481735d21f9ac0",
+                "MacAddress": "02:42:c0:a8:00:02",
+                "IPv4Address": "192.168.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
+# 现在不使用 --link也可以ping名字了！
+docker exec -it tomcat01 ping 192.168.0.3
+docker exec -it tomcat01 ping tomcat02
+```
+
+好处：
+
+redis -不同集群使用不同的网络，保证集群是安全和健康的
+
+mysql -不同集群使用不同的网络，保证集群是安全和健康的
+
+#### 网络连通
+
+![image-20211101234511069](C:\Users\White\AppData\Roaming\Typora\typora-user-images\image-20211101234511069.png)
+
+```shell
+docker network connect 网络 容器
+
+# 测试打通 mynet跟docker0
+
+# 连通之后就是将 tomcat01 放到了mynet网络下
+
+# 一个容器两个ip地址
+# 阿里云 公网和私网
+```
+
+
+
+**实战：部署Redis集群**
 
