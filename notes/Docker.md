@@ -1050,3 +1050,208 @@ docker network connect 网络 容器
 
 **实战：部署Redis集群**
 
+```shell
+# 分片 +高可用　＋　负载均衡
+
+# 创建网卡
+docker network create redis --subnet 172.38.0.0/16
+
+# shell脚本，创建六个redis配置
+for port in $(seq 1 6); \
+do \
+mkdir -p /mydata/redis/node-${port}/conf
+touch /mydata/redis/node-${port}/conf/redis.conf
+cat <<EOF>/mydata/redis/node-${port}/conf/redis.conf
+prot 6379
+bind 0.0.0.0
+cluster-enabled yes
+cluster-config-file nodes.conf
+cluster-node-timeout 5000
+cluster-announce-ip 172.38.0.1${port}
+cluster-announce-port 6379
+cluster-announce-bus-port 16379
+appendonly yes
+EOF
+done
+
+# 启动
+docker run -p 6372:6379 -p 16371:16379 --name redis-1 \
+-v /mydata/redis/node-2/data:/data \
+-v /mydata/redis/node-1/conf/redis.conf:/etc/redis/redis.conf \
+-d --net redis --ip 172.38.0.11  redis redis-server /etc/redis/redis.conf
+
+# 创建集权
+redis-dli --cluster create 172.38.0.11:6379 172.38.0.12:6379 172.38.0.13:6379 ... --cluster-replicas 1
+
+```
+
+
+
+#### SpringBoot微服务打包
+
+1、构建springboot服务
+
+2、打包应用
+
+3、编写dockerfile
+
+4、构建镜像
+
+5、发布运行
+
+
+
+```shell
+FROM java:8
+
+COPY *.jar /app.jar
+CMD ["--server.port=8080"]
+
+EXPOSE 8080
+
+ENTRYPOINT["java","-jar","/app.jar"]
+```
+
+
+
+### Docker Compose
+
+---
+
+#### 简介
+
+定义运行多个容器
+
+YAML file配置文件 
+
+single command 命令
+
+**三步骤：**
+
+- Dockerfile保证我们的项目在任何地方可以运行
+- services 什么是服务
+- docker-compose.yml这个文件怎么写
+
+作用：批量容器编排
+
+> 理解
+
+Compose是Docker官方的开源项目。需要安装！
+
+```shell
+version: "3.9"  # optional since v1.27.0
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/code
+      - logvolume01:/var/log
+    links:
+      - redis
+  redis:
+    image: redis
+volumes:
+  logvolume01: {}
+```
+
+Compose：重要的概念。
+
+- 服务services，容器。应用。（web、redis、mysql...）
+- 项目project。一组关联的容器。博客。web、mysql 、wp
+
+ #### 安装
+
+1、下载
+
+```shell
+curl -L https://get.daocloud.io/docker/compose/releases/download/1.25.5/docker-compose-`uname -s`-`uname -m`  /usr/local/bin/docker-compose
+```
+
+2、授权
+
+```shell
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+#### 体验
+
+[官方demo]: https://docs.docker.com/compose/gettingstarted/
+
+1、应用 app.py
+
+2、Dockerfile 应用打包为镜像
+
+3、Docker-compose yml文件 （定义整个服务，需要的环境。web、redis）完整的上线服务
+
+4、启动compose项目（docker-compose -d up)
+
+> 流程
+
+1、创建网络
+
+2、执行Docker-compose yaml
+
+3、启动服务
+
+通过docker-compose启动的会新建一个网络
+
+停止：docker-compose down
+
+
+
+#### yaml 规则
+
+```shell
+# 3层
+
+verion: '' # 版本
+services: # 服务
+	服务1：web
+	# 服务配置
+	images
+	build
+	network
+	.....
+	服务2:redis
+	...
+	服务3：redis
+	...
+# 其他配置 网络/卷、全局规则
+volumes:
+networks:
+configs:
+	
+```
+
+1、官方文档
+
+https://docs.docker.com/compose/compose-file/compose-file-v3/
+
+#### 开源项目（博客）
+
+https://docs.docker.com/samples/wordpress/
+
+1、下载项目（docker-compose.yaml）
+
+2、如果需要文件。Dockerfile
+
+3、文件准备齐全（直接一键启动）
+
+后台启动
+
+docker-compose up -d
+
+#### 实战
+
+1、编写项目微服务
+
+dockerfile 构建镜像
+
+3、docker-compose.yaml 编排项目
+
+4、丢到服务器 docker-compose up
+
+
+
