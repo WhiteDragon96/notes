@@ -279,3 +279,369 @@ public class SemaphoreTest {
 `release();`释放，会将当前的型号量释放+1,然后唤醒等待的线程！
 
 作用：多个共享资源互斥的使用！并发限流，控制最大线程数
+
+
+
+### 9、读写锁
+
+```java
+
+/**
+ * 独占锁（写锁）一次只能被一个线程占有
+ * 共享锁（读锁） 多个线程同时占有
+ * ReadWriteLock
+ * 
+ * 读-读  可以共存
+ * 读-写  不能共存
+ * 写-写  不能共存
+ */
+public class ReadWriteLockDemo {
+    public static void main(String[] args) {
+        MyCacheLock myCache = new MyCacheLock();
+        for (int i = 0; i < 5; i++) {
+            final int temp = i;
+            MyThreadPool.executor.execute((() -> {
+                myCache.put(temp+"",temp+"");
+            }));
+        }
+        //读取
+        for (int i = 0; i < 5; i++) {
+            final int temp = i;
+            MyThreadPool.executor.execute((() -> {
+                myCache.get(temp+"");
+            }));
+        }
+    }
+}
+
+/**
+ * 自定义缓存
+ */
+class MyCache {
+    private volatile Map<String,Object> map = new HashMap<>();
+
+    // 存
+    public void put(String key,Object value){
+        System.out.println(Thread.currentThread().getName() + "写入"+key);
+        map.put(key,value);
+        System.out.println(Thread.currentThread().getName() + "写入完成");
+    }
+
+    // 取
+    public void get(String key){
+        System.out.println(Thread.currentThread().getName() + "读取" + key);
+        Object o = map.get(key);
+        System.out.println(Thread.currentThread().getName() + "读取完成" + o);
+    }
+}
+
+/**
+ * 加锁的
+ */
+class MyCacheLock {
+    private volatile Map<String,Object> map = new HashMap<>();
+    // 读写锁：更加细粒度的控制
+    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    // 存 写入的时候，只希望只有一个线程写
+    public void put(String key,Object value){
+        readWriteLock.writeLock().lock();
+        try {
+            System.out.println(Thread.currentThread().getName() + "写入"+key);
+            map.put(key,value);
+            System.out.println(Thread.currentThread().getName() + "写入完成");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            readWriteLock.writeLock().unlock();
+        }
+    }
+
+    // 取 所有人都可以读
+    public void get(String key){
+        readWriteLock.readLock().lock();
+
+        try {
+            System.out.println(Thread.currentThread().getName() + "读取" + key);
+            Object o = map.get(key);
+            System.out.println(Thread.currentThread().getName() + "读取完成" + o);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
+
+    }
+}
+```
+
+
+
+### 10、阻塞队列
+
+写入：如果队列满了，就必须阻塞等待
+
+取：如果队列是空的，必须阻塞等待生产
+
+
+
+#### BlockingQueue
+
+什么情况下我们会使用阻塞队列：
+
+多线程并发处理，线程池
+
+**ArrayDeque**：双端队列，两边都可以取
+
+**AbstractQueue**：优先级队列
+
+![](https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg2020.cnblogs.com%2Fblog%2F819676%2F202103%2F819676-20210306230508569-2050752848.png&refer=http%3A%2F%2Fimg2020.cnblogs.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1640356109&t=8ce2f08019de42bda137b10e26173431)
+
+![](https://img2.baidu.com/it/u=2067310607,2873843712&fm=253&fmt=auto&app=138&f=PNG?w=722&h=500)
+
+**四组API**
+
+1、抛出异常
+
+2、不抛出异常
+
+3、阻塞等待
+
+4、超时等待
+
+| 方式         | 抛出异常 | 有放回置 | 阻塞 等待 | 超时等待 |
+| ------------ | -------- | -------- | --------- | -------- |
+| 添加         | add      | offer()  | put()     | offer()  |
+| 移除         | remove   | poll()   | take()    | poll()   |
+| 检测队首元素 | element  | peek     | -         | -        |
+
+```java
+	/**
+     * 抛出异常
+     */
+    public static void test1(){
+        //队列大小
+        ArrayBlockingQueue blockingQueue = new ArrayBlockingQueue<>(3);
+
+        System.out.println(blockingQueue.add("a"));
+        System.out.println(blockingQueue.add("b"));
+        System.out.println(blockingQueue.add("c"));
+
+        System.out.println("-----------------------");
+        // 抛出异常  Queue full
+//        System.out.println(blockingQueue.add("d"));
+        System.out.println(blockingQueue.remove());
+        System.out.println(blockingQueue.remove());
+        System.out.println(blockingQueue.remove());
+
+        // 抛出异常  Queue empty
+        //        System.out.println(blockingQueue.remove());
+    }
+
+ 	/**
+     * 不抛出异常
+     */
+    public static void test2(){
+        //队列大小
+        ArrayBlockingQueue blockingQueue = new ArrayBlockingQueue<>(3);
+
+        System.out.println(blockingQueue.offer("a"));
+        System.out.println(blockingQueue.offer("b"));
+        System.out.println(blockingQueue.offer("c"));
+        // 不跑出异常 fasle
+        System.out.println(blockingQueue.offer("d"));
+
+        System.out.println("-----------------------");
+
+        System.out.println(blockingQueue.poll());
+        System.out.println(blockingQueue.poll());
+        System.out.println(blockingQueue.poll());
+        // 不抛出异常 null
+        System.out.println(blockingQueue.poll());
+    }
+```
+
+
+
+> SynchronousQueue 同步容量 
+
+没有容量
+
+进去一个元素，必须等待取出来之后，才能再往里面放一个元素！
+
+put、take
+
+```java
+
+/**
+ * 同步队列
+ * 和其他BlockingQueue 不一样 SynchronousQueue 不存储元素
+ * put一个元素必须take出来才能在put
+ */
+public class SynchronousQueueDemo {
+    public static void main(String[] args) {
+        SynchronousQueue<String> queue = new SynchronousQueue<>();
+
+        MyThreadPool.executor.execute(() -> {
+            try {
+                System.out.println(Thread.currentThread().getName() + " put 1");
+                queue.put("1");
+                System.out.println(Thread.currentThread().getName() + " put 2");
+                queue.put("2");
+                System.out.println(Thread.currentThread().getName() + " put 3");
+                queue.put("3");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        MyThreadPool.executor.execute(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(3);
+                System.out.println(Thread.currentThread().getName() + " take " + queue.take());
+                TimeUnit.SECONDS.sleep(3);
+                System.out.println(Thread.currentThread().getName() + " take " + queue.take());
+                TimeUnit.SECONDS.sleep(3);
+                System.out.println(Thread.currentThread().getName() + " take " + queue.take());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+}
+```
+
+### 11、线程池（重点）
+
+线程池：3个大方法、7大参数、4种拒绝策略
+
+> 池化技术：事先准备好一些资源，有人要用，就来我这里那，用完之后还给我
+
+程序的运行，本质：占用系统的资源！优化资源的使用....创建、销毁，侍奉浪费资源
+
+线程池、连接池、内存池、对象池
+
+
+
+**线程池的有点**：
+
+1、降低资源的消耗
+
+2、提高响应的速度
+
+3、方便管理
+
+线程服用、可以控制并发数、管理线程
+
+
+
+> 三大方法
+
+```java
+//Executors 工具类、3大方法
+// 使用线程池之后，使用线程池来创建线程
+public class Demo1 {
+    public static void main(String[] args) {
+//        ExecutorService pool = Executors.newSingleThreadExecutor();//单个线程
+//        ExecutorService pool = Executors.newFixedThreadPool(5);//固定线程池
+        ExecutorService pool = Executors.newCachedThreadPool();//缓存线程池 可伸缩
+
+        try {
+            for (int i = 0; i < 10; i++) {
+                // 使用线程池之后，使用线程池来创建线程
+                pool.execute(() -> {
+                    System.out.println(Thread.currentThread().getName() + "执行了");
+                });
+            }
+        } finally {
+                // 线程池用完，程序结束，关闭线程池
+            pool.shutdown();
+        }
+
+
+    }
+}
+```
+
+
+
+> 七大参数
+
+源码分析
+
+```java
+public static ExecutorService newSingleThreadExecutor() {
+        return new FinalizableDelegatedExecutorService
+            (new ThreadPoolExecutor(1, 1,
+                                    0L, TimeUnit.MILLISECONDS,
+                                    new LinkedBlockingQueue<Runnable>()));
+    }
+
+public static ExecutorService newFixedThreadPool(int nThreads) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                                      0L, TimeUnit.MILLISECONDS,
+                                      new LinkedBlockingQueue<Runnable>());
+    }
+
+public static ExecutorService newCachedThreadPool() {
+        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,//21亿
+                                      60L, TimeUnit.SECONDS,
+                                      new SynchronousQueue<Runnable>());
+    }
+
+public ThreadPoolExecutor(int corePoolSize, //核心线程池大小
+                              int maximumPoolSize, // 最大线程大小
+                              long keepAliveTime,//超时了没有人调用就会释放
+                              TimeUnit unit,// 超时单位
+                              BlockingQueue<Runnable> workQueue,//阻塞队列
+                              ThreadFactory threadFactory,//线程工厂，创建线程的，一般不动
+                              RejectedExecutionHandler handler// 拒绝·策略) {
+        if (corePoolSize < 0 ||
+            maximumPoolSize <= 0 ||
+            maximumPoolSize < corePoolSize ||
+            keepAliveTime < 0)
+            throw new IllegalArgumentException();
+        if (workQueue == null || threadFactory == null || handler == null)
+            throw new NullPointerException();
+        this.corePoolSize = corePoolSize;
+        this.maximumPoolSize = maximumPoolSize;
+        this.workQueue = workQueue;
+        this.keepAliveTime = unit.toNanos(keepAliveTime);
+        this.threadFactory = threadFactory;
+        this.handler = handler;
+    }
+                          
+ /**
+ * 核心线程：不会被释放，一直开着的大小
+ * 最大线程：当队列满了会达到最大
+ */
+```
+
+
+
+> 手动创建线程池
+
+```java
+ExecutorService pool = new ThreadPoolExecutor(
+                2,
+                5,
+                3,
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(3),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.AbortPolicy());// 默认拒绝策略：不处理这个，直接抛异常
+```
+
+
+
+
+
+> 四种拒绝策略
+
+1、AbortPolicy() ：队列满了 抛出异常
+
+2、CallerRunsPolicy()：哪里来的去哪里
+
+3、DiscardPolicy()：队列满了不会抛出异常，diu'di
+
+4、DiscardOldestPolicy：队列满了尝试和最早的竞争 ，竞争失败丢了，不会抛出异常
