@@ -654,8 +654,6 @@ ExecutorService pool = new ThreadPoolExecutor(
 
 
 
-
-
 > 四种拒绝策略
 
 1、AbortPolicy() ：队列满了 抛出异常
