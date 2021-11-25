@@ -169,3 +169,25 @@ INSERT INTO `shengting_aco`.`aco_breed_change_info` ( `id`, `type`, `breed_id`, 
 		ab.id = '1433052708935737345' 
 	);
 
+
+
+
+
+
+
+`AI鸟类识别`
+
+```sql
+CREATE TABLE `daq_infrared_camera_resource` (
+  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'uuid',
+  `imei` varchar(255) DEFAULT NULL COMMENT '相机Imei',
+  `distinguishTime` datetime DEFAULT NULL COMMENT '识别时间',
+  `name` varchar(255) DEFAULT NULL COMMENT '鸟类名称',
+  `count` int(11) DEFAULT NULL COMMENT '发现数量',
+  `distinguishUrl` varchar(255) DEFAULT NULL COMMENT '识别文件地址',
+  `resource_type` int(2) DEFAULT NULL COMMENT '资源类型;1用于高分辨率照片，2用于视频',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=199 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='AI鸟类识别资源表';
+```
+

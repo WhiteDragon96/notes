@@ -889,7 +889,6 @@ docker push 镜像:[tag]
 
 > 小结
 >
-> 
 
  Docker 使用的是Linux的桥接，宿主机中 是一个Docker容器的网桥 docker0
 
@@ -908,7 +907,7 @@ docker exec -it tomcat02 ping tomcat01
 
 # 反向不可以可以ping通
 docker exec -it tomcat01 ping tomcat02
-Net not know
+Name or service not known
 ```
 
 
@@ -1040,7 +1039,7 @@ docker network connect 网络 容器
 
 # 测试打通 mynet跟docker0
 
-# 连通之后就是将 tomcat01 放到了mynet网络下
+# 连通之后就是将 tomcat01 放到了mynet网络下，tomcat有两个内网
 
 # 一个容器两个ip地址
 # 阿里云 公网和私网
@@ -1256,4 +1255,38 @@ dockerfile 构建镜像
 
 
 ### Docker Swarm
+
+
+
+
+
+### 应用
+
+---
+
+**`epic`**
+
+```shell
+docker run -it --name epic -e TZ=Asia/Shanghai --restart unless-stopped -v /appdata/epic:/User_Data luminoleon/epicgames-claimer -r 10:30 -a -ps SCT42461T86ZEIJOoskFirJMdmXboRFYX 
+```
+
+**`bilibili-helper`**
+
+```shell
+docker run -d --name=bilibili-helper --restart unless-stopped -e CRON=true -e TZ=Asia/Shanghai -v /appdata/bilibili-config:/config  superng6/bilibili-helper:latest
+```
+
+**`阿里云挂载服务`**
+
+```shell
+docker run -d --name=webdav-aliyundriver --restart=always -p 8787:8080 -v /appdata/aliyundriver/aliyundriver:/etc/aliyun-driver/ -e TZ="Asia/Shanghai" -e ALIYUNDRIVE_REFRESH_TOKEN="refreshToken" -e ALIYUNDRIVE_AUTH_PASSWORD="password" -e JAVA_OPTS="-Xmx1g" zx5253/webdav-aliyundriver
+
+本地启动：java -jar webdav.jar --aliyundrive.refresh-token="refreshToken"
+
+# /etc/aliyun-driver/ 挂载卷自动维护了最新的refreshToken，建议挂载
+# ALIYUNDRIVE_AUTH_PASSWORD 是admin账户的密码，建议修改
+# JAVA_OPTS 可修改最大内存占用，比如 -e JAVA_OPTS="-Xmx512m" 表示最大内存限制为512m
+```
+
+
 
