@@ -859,9 +859,21 @@ public class StreamDemo {
 
 ForkJoin在JDK1.7，并行执行任务！提高效率，大数据量！  
 
+[![ogJC8J.png](https://s4.ax1x.com/2021/12/07/ogJC8J.png)](https://imgtu.com/i/ogJC8J)
+
+> ForkJoin特点：工作窃取
+
+当任务1执行完了，回去任务2拿任务执行，任务是放在一个双端队列中
 
 
 
+> 如何使用ForkJoin 
+
+
+
+
+
+[![ogU4fO.png](https://s4.ax1x.com/2021/12/07/ogU4fO.png)](https://imgtu.com/i/ogU4fO)
 
 
 
