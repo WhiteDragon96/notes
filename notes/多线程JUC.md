@@ -660,6 +660,218 @@ ExecutorService pool = new ThreadPoolExecutor(
 
 2、CallerRunsPolicy()：哪里来的去哪里
 
-3、DiscardPolicy()：队列满了不会抛出异常，diu'di
+3、DiscardPolicy()：队列满了不会抛出异常
 
 4、DiscardOldestPolicy：队列满了尝试和最早的竞争 ，竞争失败丢了，不会抛出异常
+
+
+
+#### CPU密集型和IO密集型(调优)
+
+> 最大线程到底改如何定义
+
+1、CPU 密集型，几核就是几，可以保持CPU的效率最高！
+
+```java
+// 获取CPU线程数   
+System.out.println(Runtime.getRuntime().availableProcessors());
+```
+
+
+
+2、IO 密集型 -> 判断你的程序中十分耗IO的线程
+
+​			程序 15个大型任务 IO十分占用资源！
+
+
+
+### 12、四大函数式接口（必须掌握）
+
+lambda表达式、链式编程、函数式接口、Stream流式计算
+
+> 函数式接口：只有一个方法的接口
+
+```java
+@FunctionalInterface
+public interface Runnable {
+    public abstract void run();
+}
+// 超级多FunctionalInterface
+// 简化编程模型，再新版本的框架中大量应用
+// foreach(消费者类的函数式接口)
+```
+
+![image-20211207194813518](https://raw.githubusercontent.com/WhiteDragon96/ImgCloud/main/data/imgimage-20211207194813518.png)
+
+
+
+**代码测试：**
+
+> Function 函数式接口
+
+![image-20211207195312357](https://raw.githubusercontent.com/WhiteDragon96/ImgCloud/main/data/imgimage-20211207195312357.png)
+
+```java
+/**
+ * Function 函数型接口,有一个输入，一个输出
+ * 只要是函数式接口 可以用 Lambda表达式简化
+ *
+ * @author tcs
+ * @date Created in 2021-12-07
+ */
+public class Demo01 {
+    public static void main(String[] args) {
+        // 工具类：输出输入的值
+        Function function = new Function<String,String>() {
+            @Override
+            public String apply(String o) {
+                return o;
+            }
+        };
+        System.out.println(function.apply("hello"));
+        // Lambda 表达式
+        Function<String,String> function1 = (str) -> {return str;};
+    }
+}
+```
+
+> Predicate 断定型接口
+
+![image-20211207200545022](https://raw.githubusercontent.com/WhiteDragon96/ImgCloud/main/data/imgimage-20211207200545022.png)
+
+```java
+
+/**
+ * 断定型接口：有一个输入参数，返回值只能是 布尔值！
+ *
+ * @author tcs
+ * @date Created in 2021-12-07
+ */
+public class PredicateDemo {
+    public static void main(String[] args) {
+        Predicate<String> predicate = new Predicate<String>() {
+            @Override
+            public boolean test(String s) {
+                return s.isEmpty();
+            }
+        };
+        System.out.println(predicate.test(""));
+        Predicate<String> predicate1 = (str) -> {return str.isEmpty();};
+    }
+}
+```
+
+> Consumer 消费型接口
+
+```java
+/**
+ * 只有输入没有返回值
+ *
+ * @author tcs
+ * @date Created in 2021-12-07
+ */
+public class ConsumerDemo {
+    public static void main(String[] args) {
+        // 打印字符串
+        Consumer<String> consumer = new Consumer<String>() {
+            @Override
+            public void accept(String o) {
+                System.out.println(o);
+            }
+        };
+        consumer.accept("hello");
+        Consumer<String> consumer1 = (str) -> {
+            System.out.println(str);
+        };
+        consumer1.accept("world");
+    }
+}
+```
+
+> Supplier 供给型接口
+
+```java
+/**
+ * 没有参数只有返回值
+ *
+ * @author tcs
+ * @date Created in 2021-12-07
+ */
+public class SupplierDemo {
+    public static void main(String[] args) {
+        Supplier<String> supplier = new Supplier<String>() {
+            @Override
+            public String get() {
+                return "1024";
+            }
+        };
+        System.out.println(supplier.get());
+        Supplier<String> supplier1 = () -> {return "1024";};
+        System.out.println(supplier1.get());
+    }
+}
+```
+
+
+
+### 13、Stream流式计算
+
+> 什么是Stream流式计算
+
+集合、MySQL本质就是存储东西的
+
+计算都应该交给流来计算
+
+**流式计算**
+
+```java
+/**
+ *  题目要求：一分钟内完成此题，只能用一行代码实现！
+ *  现在有5个用户！筛选；
+ *  1、ID 必须是偶数
+ *  2、年龄必须大于23岁
+ *  3、用户名转为大写字母率
+ *  4、用户名字母倒着排序
+ *  5、只输出一个用户!
+ */
+public class StreamDemo {
+    public static void main(String[] args) {
+        User user1 = new User(1,"a",21);
+        User user2 = new User(2,"b",22);
+        User user3 = new User(3,"c",23);
+        User user4 = new User(4,"d",24);
+        User user5 = new User(6,"e",25);
+        List<User> list = Arrays.asList(user1, user2, user3, user4,user5);
+
+        list.stream()
+                .filter(user -> {return user.getId()%2==0;})
+                .filter(user -> {return user.getAge()>23;})
+                .map(user -> {return user.getName().toUpperCase();})
+                .sorted((u1,u2) -> { return ((String) u1).compareTo(u2);})
+                .forEach(System.out::println);
+    }
+}
+```
+
+
+
+### 14、ForkJoin
+
+ForkJoin在JDK1.7，并行执行任务！提高效率，大数据量！  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
