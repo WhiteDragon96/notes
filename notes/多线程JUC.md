@@ -877,13 +877,259 @@ ForkJoin在JDK1.7，并行执行任务！提高效率，大数据量！
 
 
 
+### 15、异步调用
+
+>Future 设计的初衷：对将来的某个事件的结果进行建模
+
+```java
+/**
+* 异步调用：CompletableFuture
+* // 异步执行
+* // 成功回调
+* // 失败回调
+*/
+public class FutureDemo1 {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        // 没有返回值的异步回调
+        CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() ->{
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(Thread.currentThread().getName()+ "runAsync=>Void");
+        });
+        System.out.println("1111");
+        completableFuture.get(); //获取执行结果
+        System.out.println("2222");
+
+        // 有返回值的异步回调 supplyAsync
+        // 失败返回的是错误信息
+        CompletableFuture<Integer> completableFuture1 = CompletableFuture.supplyAsync( () -> {
+            System.out.println(Thread.currentThread().getName()+ "runAsync=>Integer");
+//            int i= 1/0;
+            return 1024;
+        });
+
+        Integer integer = completableFuture1.whenComplete((t, u) -> {
+            System.out.println("t=>" + t); //正常返回结果
+            System.out.println("u=>" + u); // 错误信息 u=>java.util.concurrent.CompletionException: java.lang.ArithmeticException: / by zero
+        }).exceptionally((e) -> {
+            e.getMessage();
+            return 233;
+        }).get();
+        System.out.println(integer);
+    }
+}
+```
 
 
 
+### 16、JMM
+
+> 谈谈对 Volatile 的理解
+
+Volatile 是 Java虚拟机提供`轻量级的同步机制`
+
+1、保证可见性
+
+2、不保证原子性
+
+3、禁止指令重排
 
 
 
+> 什么是 JMM
+
+JMM：Java 内存模型，不存在的东西，概念！约定！
 
 
 
+**关于JMM的一些同步的约定：**
 
+1、线程解锁钱，必须把共享变量立刻刷回主存
+
+2、线程枷锁前，必须读取主存中的最新值到工作内存中！
+
+3、加锁何解锁是同一把锁
+
+[![oqShMq.png](https://s4.ax1x.com/2021/12/12/oqShMq.png)](https://imgtu.com/i/oqShMq)
+
+[![oqpo6I.png](https://s4.ax1x.com/2021/12/12/oqpo6I.png)](https://imgtu.com/i/oqpo6I)
+
+Java内存模型中定义了**8种操作**来完成，虚拟机保证了每种操作都是原子的。
+
+- lock（锁定）：作用于主存的变量，把一个变量标识为一条线程独占状态。
+- unlock（解锁）：作用于主存变量，把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定。
+- read（读取）：作用于主存变量，把一个变量的值从主存传输到工作内存。
+- load（载入）：作用于工作内存变量，把 read 来的值放入工作内存的变量副本中。
+- use（使用）：作用于工作内存变量，把工作内存中一个变量的值传递给执行引擎，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作。
+- store（存储）：作用于工作内存变量，把工作内存中一个变量的值传送到主存。
+- write（写入）：作用于主存变量，把 store 操作从工作内存中得到的变量的值放入主存的变量中。
+
+
+
+问题：线程A不知道值已经变了
+
+### 17、Volatile
+
+> 1、保证可见性
+
+```java
+public class JMMDemo {
+    // 不加volatile程序会死循环
+    private volatile static  int num = 0;
+
+    public static void main(String[] args) {
+        new Thread( () -> {
+            //线程一
+            while (num == 0){
+
+            }
+        }).start();
+
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // 线程一不知道num变了
+        num = num +1;
+        System.out.println(num);
+    }
+}
+```
+
+> 2、不保证原子性
+
+原子性：不可分割
+
+线程A在执行任务的时候，不能被打扰的，也不能被分割，要么同时成功，要么同时失败。
+
+```java
+// 不保证原子性
+public class VDemo02 {
+    private volatile static int num = 0;
+
+    public  static void add() {
+        num++;
+    }
+
+    public static void main(String[] args) {
+        // 理论上num结果为2 万
+        for (int i = 0; i < 20; i++) {
+            new Thread(() -> {
+                for (int i1 = 0; i1 < 1000; i1++) {
+                    add();
+                }
+            }).start();
+        }
+
+        while (Thread.activeCount() > 2){// main gc 一定有两个线程存活，保证都执行完了
+            Thread.yield();
+        }
+        System.out.println(num);
+    }
+}
+```
+
+
+
+**如果不加lock何synchronized怎么保证原子性**
+
+javap -c *.class 可以编译成字节码文件
+
+num++不是原子性操作
+
+[![oqiz5T.png](https://s4.ax1x.com/2021/12/12/oqiz5T.png)](https://imgtu.com/i/oqiz5T)
+
+使用原子类，解决原子性操作
+
+AtomicBoolean
+
+AtomicInteger
+
+AtomicLong
+
+```java
+// 不保证原子性
+public class VDemo02 {
+//    private volatile static int num = 0;
+    // 原子类的 Integer
+    private volatile static AtomicInteger num = new AtomicInteger();
+
+    public  static void add() {
+       // num++; //不是一个原子性操作
+        num.getAndIncrement();// AtomicInteger的+1方法 用的底层的CAS
+    }
+
+    public static void main(String[] args) {
+        // 理论上num结果为2 万
+        for (int i = 0; i < 20; i++) {
+            new Thread(() -> {
+                for (int i1 = 0; i1 < 1000; i1++) {
+                    add();
+                }
+            }).start();
+        }
+
+        while (Thread.activeCount() > 2){// main gc 一定有两个线程存活，保证都执行完了
+            Thread.yield();
+        }
+        System.out.println(num);
+    }
+}
+```
+
+
+
+> 原子类为什么可以原子操作
+
+这些类的底层都直接和操作系统挂钩！在内存中修改值！Unsafe类是一个
+
+很特殊的存在！
+
+
+
+> 指令重排
+
+什么是指令重排：**你写的程序，计算机并不是按照你写的那样执行的。**
+
+源代码->编译器优化你的重排->指令并行也可能会重排->内存系统也会重排->执行
+
+处理器在进行指令重排的时候，考虑数据之间的依赖性
+
+```java
+int x = 1; // 1
+int y = 2; // 2
+x = x + 1; // 3
+y = x*x;   // 4
+我们锁期望的 1234
+可能是 2134 1324
+```
+可能造成的结果 abxy这四个值默认都是0
+
+| 线程A | 线程B |
+| ----- | ----- |
+| x=a   | y=b   |
+| b=1   | a=2   |
+
+
+
+**Volatile可以避免指令重排：**
+
+内存屏障。CPU指令，作用：
+
+1、保证特定的操作的执行顺序！
+
+2、可以保证某些变量的内存可见性（利用这些特性volatile实现了可见性）
+
+[![oqZ7GV.png](https://s4.ax1x.com/2021/12/12/oqZ7GV.png)](https://imgtu.com/i/oqZ7GV)
+
+Volatile是可以保证可见性，不能保证原子性，由于内存屏障，可以保证避免指令重排的现象产生！
+
+内存屏障在单例模式用的最多
+
+### 18、彻底玩转单例模式
+
+饿汉式 DCL懒汉式
