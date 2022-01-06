@@ -1133,3 +1133,256 @@ Volatile是可以保证可见性，不能保证原子性，由于内存屏障，
 ### 18、彻底玩转单例模式
 
 饿汉式 DCL懒汉式
+
+> 饿汉式
+
+```java
+public class Hungry {
+    // 可能会浪费空间
+    private byte[] data1 = new byte[1024*1024];
+    private byte[] data2 = new byte[1024*1024];
+    private byte[] data3 = new byte[1024*1024];
+
+    private Hungry(){
+
+    }
+
+    private final static Hungry HUNGRY = new Hungry();
+
+    public static Hungry getInstance(){
+        return HUNGRY;
+    }
+}
+```
+
+> 懒汉式
+
+```java
+public class Lazy {
+
+    private static  boolean qinjiang = false;
+
+    private Lazy(){
+        System.out.println(Thread.currentThread().getName()+ "ok");
+        synchronized (Lazy.class){
+            if (LAZY !=null){
+                throw new RuntimeException("不要试图用反射破坏单例");
+            }
+        }
+    }
+    private volatile static Lazy LAZY;
+
+    // 双重监测锁模式的 懒汉式单例 DCL懒汉式
+    public static Lazy getInstance(){
+        if (LAZY == null){
+            synchronized (Lazy.class) {
+                if (LAZY == null) {
+                    LAZY = new Lazy(); // 不是一个原子性操作
+                    /**
+                     * 1. 分配内存空间
+                     * 2. 执行构造方法，初始化对象
+                     * 3. 把这个对象指向这个空间
+                     * 123
+                     * 132
+                     * 必须加volatile避免指令重排
+                     */
+                }
+            }
+        }
+        return LAZY;
+    }
+
+    // 多线程并发
+    public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        for (int i = 0; i < 10; i++) {
+            new Thread(() ->{
+                Lazy.getInstance();
+            }).start();
+        }
+        // 反射 破坏单例
+        Lazy instance = Lazy.getInstance();
+        Constructor<Lazy> declaredConstructor = Lazy.class.getDeclaredConstructor(null);
+        declaredConstructor.setAccessible(true); // 可访问私有方法
+        Lazy lazy = declaredConstructor.newInstance();
+        System.out.println(instance);
+        System.out.println(lazy);
+
+    }
+}
+```
+
+> 静态内部类
+
+```java
+public class Holder {
+    // 单例模式一定是构造器私有
+
+    private Holder(){
+
+    }
+
+    public static Holder getInstance(){return InnerClass.HOLDER;}
+
+    public static class InnerClass{
+        private static final Holder HOLDER = new Holder();
+    }
+}
+```
+
+> 单例不安全，反射
+
+> 枚举，里面没有无参构造
+
+```java
+
+/**
+ * enum 本身也是一个Class类
+ *
+ * @author tcs
+ * @date Created in 2021-12-27
+ */
+public enum EnumSingle {
+
+    INSTANCE;
+
+    public EnumSingle getInstance(){
+        return INSTANCE;
+    }
+}
+
+class Test{
+    public static void main(String[] args) {
+        EnumSingle instance = EnumSingle.INSTANCE;
+        EnumSingle instance2 = EnumSingle.INSTANCE;
+        System.out.println(instance);
+        System.out.println(instance2);
+    }
+}
+```
+
+
+
+### 19、深入理解CAS
+
+> 什么式CAS
+
+
+
+> unsafe类
+
+![image-20211227202000663](https://raw.githubusercontent.com/WhiteDragon96/ImgCloud/main/data/imgimage-20211227202000663.png)
+
+![image-20211227202218451](https://raw.githubusercontent.com/WhiteDragon96/ImgCloud/main/data/imgimage-20211227202218451.png)
+
+
+
+CAS：比较当前工作内存中的值和主内存中的值，如果这个值是期望的，那么则执行操作！如果不是就一直循环！
+
+**缺点：**
+
+1、循环会耗时
+
+2、一次性只能保证一个共享变量的原子性
+
+3、ABA问题
+
+
+
+> CAS：ABA问题（狸猫换太子）
+
+![image-20211228190906070](https://raw.githubusercontent.com/WhiteDragon96/ImgCloud/main/data/imgimage-20211228190906070.png)
+
+```java
+public class CASDemo {
+
+    // CAS compareAndSet：比较并交换！
+    public static void main(String[] args) {
+        AtomicInteger atomicInteger = new AtomicInteger(2020);
+
+        // 对于我们平时写的SQL：乐观锁
+        // 期望、更新
+        // public final boolean compareAndSet(int expect, int update)
+        // 如果我期望的值达到了，那么就更新，否则，就不更新
+        // ============捣乱的线程============
+        System.out.println(atomicInteger.compareAndSet(2020, 2021));
+        System.out.println(atomicInteger.get());
+
+        System.out.println(atomicInteger.compareAndSet(2021, 2020));
+        System.out.println(atomicInteger.get());
+
+        // ==============期待的线程==============
+        System.out.println(atomicInteger.compareAndSet(2020, 6666));
+        System.out.println(atomicInteger.get());
+    }
+}
+```
+
+
+
+### 20、原子引用
+
+> 解决ABA问题，引入原子引用
+
+带版本号的原子操作！
+
+**Integer 使用了对象缓存机制，默认范围是-128～127，推荐使用静态工厂方法valueof 获取对象实例，而不是 new，因为 valueof使用缓存，而 new 一定会创建新的对象分配新的内存空间；**
+
+
+
+### 21、各种锁的理解
+
+#### 1、公平锁、非公平锁
+
+公平锁：非常公平，不能够插队
+
+非公平锁：非常不公平，可以插队
+
+```java
+// 默认非公平锁
+public ReentrantLock() {
+        sync = new NonfairSync();
+    }
+// 改成公平锁
+public ReentrantLock(boolean fair) {
+        sync = fair ? new FairSync() : new NonfairSync();
+    }
+
+```
+
+
+
+#### 2、可重入锁
+
+可重入锁（递归锁）
+
+![image-20211228194039542](https://raw.githubusercontent.com/WhiteDragon96/ImgCloud/main/data/imgimage-20211228194039542.png)
+
+
+
+#### 3、自旋锁
+
+spinlock：不断重试直到成功
+
+![image-20211228195450110](https://raw.githubusercontent.com/WhiteDragon96/ImgCloud/main/data/imgimage-20211228195450110.png)
+
+
+
+#### 4、死锁
+
+![image-20220106192154821](https://raw.githubusercontent.com/WhiteDragon96/ImgCloud/main/data/imgimage-20220106192154821.png)
+
+> 怎么排除死锁
+
+1、使用jps -l定位进程号，查看当前进程号
+
+![image-20220106193153725](https://raw.githubusercontent.com/WhiteDragon96/ImgCloud/main/data/imgimage-20220106193153725.png)
+
+2、使用 jstack “进程号” 找到死锁问题
+
+
+
+问题排查
+
+1、日志
+
+2、堆栈信息

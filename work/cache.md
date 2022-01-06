@@ -284,3 +284,444 @@ ap_hunt_team_regulation:组织实施
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```shell
+mvn install:install-file -DgroupId=gn -DartifactId=GNCalendar -Dversion=v1.0 -Dpackaging=jar -Dfile=C:\Users\neu\Downloads\springboot-javafx-app-demo-master\springboot-javafx-app-demo-master\lib\GNCalendar-1.0-alpha.jar
+
+mvn install:install-file -DgroupId=gn -DartifactId=GNButton -Dversion=v1.1.0 -Dpackaging=jar -Dfile=C:\Users\neu\Downloads\springboot-javafx-app-demo-master\springboot-javafx-app-demo-master\lib\GNButton-1.1.0.jar
+
+mvn install:install-file -DgroupId=gn -DartifactId=GNCarousel -Dversion=v2.1.5 -Dpackaging=jar -Dfile=C:\Users\neu\Downloads\springboot-javafx-app-demo-master\springboot-javafx-app-demo-master\lib\GNCarousel-2.1.5.jar
+
+mvn install:install-file -DgroupId=gn -DartifactId=GNDecorator -Dversion=v2.1.2-alpha -Dpackaging=jar -Dfile=C:\Users\neu\Downloads\springboot-javafx-app-demo-master\springboot-javafx-app-demo-master\lib\GNDecorator-2.1.2-alpha.jar
+
+mvn install:install-file -DgroupId=gn -DartifactId=GNAvatarView -Dversion=v1.0-rc -Dpackaging=jar -Dfile=C:\Users\neu\Downloads\springboot-javafx-app-demo-master\springboot-javafx-app-demo-master\lib\GNAvatarView-1.0-rc.jar
+
+
+```
+
+
+
+
+
+
+
+```
+git log  --format='%aN' | sort -u | while read name; do echo -en "$name\t"; git log --author="$name" --pretty=tformat:  --since ==2021-12-14 --until=2021-12-15 --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }' -; done
+
+git log --since="2020-12-13" --before="2021-12-15" --author="$(git config --get user.name)" --pretty=tformat: --numstat | gawk '{ add += $1 ; subs += $2 ; loc += $1 - $2 } END { printf "added lines: %s removed lines : %s total lines: %s\n",add,subs,loc }'
+```
+
+
+
+美团token
+
+```shell
+uuid=935ad24214d44dd1a812.1639480339.1.0.0; __mta=51140118.1639480341689.1639480341689.1639480341689.1; webloc_geo=30.33075%2C120.102222%2Cwgs84; ci=50; mtcdn=K; userTicket=kbTIybkkreYHXWJqCvAJHfqUboHWCWRloIKGgXrE; _yoda_verify_resp=gzu%2FWzTu7F6ZKiw%2BN%2FQx9ci92LZZga7GouWi1fk04Csi5Ozf%2Bvo6uPKDX2lg%2BiJNe0gbs%2B5yB4Ik5hQO4TyqZ1B7X2gFXpPCNmtEzRuGf463fnu7cAdnTLVA0%2BMY0vaGcMp6%2FzewgC2IbRsnthUxeWbfQ%2FbCgT%2Fwk3tKjEmw5x%2FErvz78g%2FlbBicfFwnonfBaNwZH%2FX34%2Bmm7aJMmdGHKnLSnlpRxN0qL16TcOpYpMUOGMSiM3kYbiVE%2BMp7BYdvCZjzRxwHCzKxMmWOnXW4f%2BnDaj7pYzCo8borjoPvYUTJrlVt1jF7BEsxTdKsQ%2F1cVH9wI9gzDR5JfEVCJz08Aw%3D%3D; _yoda_verify_rid=146906406081805d; u=250387189; n=WhiteDra; lt=KoS1icdlVOAD6pEWDNUKUF_3wtMAAAAAhA8AAE7tyhbBg4bn3ewwXgOvLjiJSopelcuFeEcwU_J6IYVngbmZg8Q4VNMvKcE-WvPnRg; mt_c_token=KoS1icdlVOAD6pEWDNUKUF_3wtMAAAAAhA8AAE7tyhbBg4bn3ewwXgOvLjiJSopelcuFeEcwU_J6IYVngbmZg8Q4VNMvKcE-WvPnRg; token=KoS1icdlVOAD6pEWDNUKUF_3wtMAAAAAhA8AAE7tyhbBg4bn3ewwXgOvLjiJSopelcuFeEcwU_J6IYVngbmZg8Q4VNMvKcE-WvPnRg; lsu=; token2=KoS1icdlVOAD6pEWDNUKUF_3wtMAAAAAhA8AAE7tyhbBg4bn3ewwXgOvLjiJSopelcuFeEcwU_J6IYVngbmZg8Q4VNMvKcE-WvPnRg; unc=WhiteDra; firstTime=1639480444410
+```
+
+
+
+```shell
+
+https://api.telegram.org/bot''5089106240:AAHA7xpH8rMnZEe2-R_gUmAT3QQwrodCahY''/getupdates
+```
+
+```shell
+acw_tc=2f6a1f9416395373820334210e12baaf4765dc3406a4ae1967ca546b32299b; i18n_redirected=zh_CN; newopkey=UC3ED6yt1DFJOZQuAUD4C2cEcZl8RpB8C1jTgdkX8q2TmdqeoeQuV8IdspRclwQQl37e3wYAQeM; sa_distinct_id=RFlrek9FdUF2bktsaGdKaHg0NTk0Zz09; NEWOPPOSID=eyJpdiI6Iko2emFEcFZxRGxpK0kwakNpSVF2eHc9PSIsInZhbHVlIjoiTGV2dDZzdGRUT0FOSWJBZUhVMlR0TWJuVWE3UUo5WHE0RWdzQml3ck1zaEszWDlQTCtBUi8xZytJUTdza2x5dXZOQmwycW5CYzBnU0xLNXlWZWFFdUpFVVBoQ2ZjRDhFaUt3SDBGMWljMUhlVDZ2K0ZhcUxXOU1tRWlPL0ZTSWoiLCJtYWMiOiIyYzA2MjRkYjE5NjM5ZTAzOTNjZDU2MzlmNjAxZmUyNGQ4MGU2ZmMzNTUwYTM4OWE0OGJlODFmZWMwNzlkNGVjIn0=; sa_distinct_id=RFlrek9FdUF2bktsaGdKaHg0NTk0Zz09; source_type=504; s_channel=h5_web; is_login=false; utm_source=direct; utm_medium=direct; utm_campaign=direct; utm_term=direct; us=direct; um=direct; uc=direct; ut=direct
+
+
+source_type=504;TOKENSID=eyJpdiI6Iko2emFEcFZxRGxpK0kwakNpSVF2eHc9PSIsInZhbHVlIjoiTGV2dDZzdGRUT0FOSWJBZUhVMlR0TWJuVWE3UUo5WHE0RWdzQml3ck1zaEszWDlQTCtBUi8xZytJUTdza2x5dXZOQmwycW5CYzBnU0xLNXlWZWFFdUpFVVBoQ2ZjRDhFaUt3SDBGMWljMUhlVDZ2K0ZhcUxXOU1tRWlPL0ZTSWoiLCJtYWMiOiIyYzA2MjRkYjE5NjM5ZTAzOTNjZDU2MzlmNjAxZmUyNGQ4MGU2ZmMzNTUwYTM4OWE0OGJlODFmZWMwNzlkNGVjIn0=;app_param=xxx;
+```
+
+
+
+
+
+鸟岛数据sql
+
+```sql
+CREATE TABLE `daq_soil` (
+	`id` BIGINT ( 64 ) NOT NULL COMMENT '主键id',
+	`env_eq_id` BIGINT ( 64 ) DEFAULT NULL COMMENT '设备编号',
+	`zone_id` BIGINT ( 64 ) DEFAULT NULL COMMENT '区域',
+	`surface_temperature` double DEFAULT NULL COMMENT '地表-土壤温度',
+ 	 `surface_battery` double DEFAULT NULL COMMENT '地表-电池电量',
+	  `surface_outside_voltage` double DEFAULT NULL COMMENT '地表-外部输入电压',
+ 	 `ten_temperature` double DEFAULT NULL COMMENT '10cm-土壤温度',
+ 	 `ten_water` double DEFAULT NULL COMMENT '10cm-水分含量',
+ 	 `ten_salt` double DEFAULT NULL COMMENT '10cm-盐分含量',
+ 	 `twenty_temperature` double DEFAULT NULL COMMENT '20cm-土壤温度',
+ 	 `twenty_water` double DEFAULT NULL COMMENT '20cm-水分含量',
+ 	 `twenty_salt` double DEFAULT NULL COMMENT '20cm-盐分含量',
+ 	 `thirty_temperature` double DEFAULT NULL COMMENT '30cm-土壤温度',
+ 	 `thirty_water` double DEFAULT NULL COMMENT '30cm-水分含量',
+	  `thirty_salt` double DEFAULT NULL COMMENT '30cm-盐分含量',
+ 	 `forty_temperature` double DEFAULT NULL COMMENT '40cm-土壤温度',
+ 	 `forty_water` double DEFAULT NULL COMMENT '40cm-水分含量',
+ 	 `forty_salt` double DEFAULT NULL COMMENT '40cm-盐分含量',
+	`event_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '事件时间',
+	`create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+	`update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+	`is_deleted` INT ( 2 ) NOT NULL DEFAULT '0' COMMENT '0未删除 1已删除',
+	`update_user` BIGINT ( 10 ) DEFAULT NULL COMMENT '更新人',
+	`create_user` BIGINT ( 10 ) DEFAULT NULL COMMENT '创建人',
+	`create_dept` BIGINT ( 10 ) DEFAULT NULL COMMENT '创建部门',
+	`status` INT ( 2 ) DEFAULT NULL COMMENT '状态',
+PRIMARY KEY ( `id` ) USING BTREE 
+) ENGINE = INNODB DEFAULT CHARSET = utf8mb4 COMMENT = '土壤监测数据实时';
+```
+
+
+
+
+
+```
+{
+    "notifyUrl": "http://ecology.admin.neusense.cn/data/e/data/notice",
+    "lastModified": "2021-11-16 16:11:29",
+    "message": "ok"
+}
+```
+
+
+
+```shell
+CREATE TABLE `proj_e_data` (
+  `id` varchar(36) NOT NULL COMMENT '主键ID,GUID',
+  `sn` varchar(50) DEFAULT NULL COMMENT '设备编号',
+  `city_code` varchar(16) DEFAULT NULL COMMENT '所属城市',
+  `region_code` varchar(16) DEFAULT NULL COMMENT '所在行政区',
+  `zone_id` varchar(36) DEFAULT NULL COMMENT '片区id',
+  `air_temperature` double DEFAULT NULL COMMENT '空气温度',
+  `battery` double DEFAULT NULL COMMENT '电池电量',
+  `outside_voltage` double DEFAULT NULL COMMENT '外部输入电压',
+  `relative_humidity` double DEFAULT NULL COMMENT '相对湿度',
+  `dew_point` double DEFAULT NULL COMMENT '露点',
+  `atmospheric_pressure` double DEFAULT NULL COMMENT '大气压',
+  `max_wind_speed` double DEFAULT NULL COMMENT '最大风速',
+  `wind_speed` double DEFAULT NULL COMMENT '风速',
+  `wind_direction` double DEFAULT NULL COMMENT '风向',
+  `rainfall` double DEFAULT NULL COMMENT '雨量',
+  `rain_daily` double DEFAULT NULL COMMENT '当天累计雨量',
+  `solarRadiationIntensity` double DEFAULT NULL COMMENT '太阳辐射',
+  `solarRadiationAmount` double DEFAULT NULL COMMENT '累计太阳辐射',
+  `pm2` double DEFAULT NULL COMMENT 'pm2.5',
+  `pm10` double DEFAULT NULL COMMENT 'PM10',
+  `tvoc` double DEFAULT NULL COMMENT 'TVOC含量',
+  `collect_time` bigint(20) DEFAULT NULL COMMENT '采集时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='e生态气象传感器原始数据';
+```
+
+
+
+```
+CREATE TABLE `daq_environment` (
+  `id` bigint(64) NOT NULL COMMENT '主键id',
+  `env_eq_id` bigint(64) DEFAULT NULL COMMENT '设备编号',
+  `zone_id` bigint(64) DEFAULT NULL COMMENT '区域',
+`air_temperature` double DEFAULT NULL COMMENT '空气温度',
+  `battery` double DEFAULT NULL COMMENT '电池电量',
+  `outside_voltage` double DEFAULT NULL COMMENT '外部输入电压',
+  `relative_humidity` double DEFAULT NULL COMMENT '相对湿度',
+  `dew_point` double DEFAULT NULL COMMENT '露点',
+  `atmospheric_pressure` double DEFAULT NULL COMMENT '大气压',
+  `max_wind_speed` double DEFAULT NULL COMMENT '最大风速',
+  `wind_speed` double DEFAULT NULL COMMENT '风速',
+  `wind_direction` double DEFAULT NULL COMMENT '风向',
+  `rainfall` double DEFAULT NULL COMMENT '雨量',
+  `rain_daily` double DEFAULT NULL COMMENT '当天累计雨量',
+  `solarRadiationIntensity` double DEFAULT NULL COMMENT '太阳辐射',
+  `solarRadiationAmount` double DEFAULT NULL COMMENT '累计太阳辐射',
+  `pm2` double DEFAULT NULL COMMENT 'pm2.5',
+  `pm10` double DEFAULT NULL COMMENT 'PM10',
+  `tvoc` double DEFAULT NULL COMMENT 'TVOC含量',
+  `event_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '事件时间',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_deleted` int(2) NOT NULL DEFAULT '0' COMMENT '0未删除 1已删除',
+  `update_user` bigint(10) DEFAULT NULL COMMENT '更新人',
+  `create_user` bigint(10) DEFAULT NULL COMMENT '创建人',
+  `create_dept` bigint(10) DEFAULT NULL COMMENT '创建部门',
+  `status` int(2) DEFAULT NULL COMMENT '状态',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='气象监测数据实时';
+```
+
+
+
+
+
+
+
+```
+气象
+[{"data":{"地表":{"44":{"symbol":"mm","name":"雨量","value":"0.0"},"45":{"symbol":"W/m²","name":"当前太阳辐射强度","value":"370.1"},"46":{"symbol":"MJ/m²","name":"累计太阳辐射量","value":"4.814"},"36":{"symbol":"%","name":"相对湿度","value":"34.13"},"37":{"symbol":"℃","name":"露点","value":"-10.27"},"38":{"symbol":"hPa","name":"大气压力","value":"1023.97"},"192":{"symbol":"ug/m3","name":"PM2.5浓度","value":"3.0"},"193":{"symbol":"ug/m3","name":"PM10浓度","value":"3.0"},"104":{"symbol":"mm","name":"当天累计雨量","value":"0.0"},"206":{"symbol":"ppb","name":"TVOC含量","value":"60000.0"},"92":{"symbol":"℃","name":"空气温度","value":"4.18"},"50":{"symbol":"v","name":"电池电量","value":"3.523"},"40":{"symbol":"m/s","name":"最大风速","value":"2.56"},"41":{"symbol":"m/s","name":"风速","value":"2.27"},"42":{"symbol":"°","name":"风向","value":"169.0"},"54":{"symbol":"v","name":"外部输入电压","value":"8.809"}}},"sn":"21606705124302","collect_time":1639717200000}]
+//土壤
+[{"data":{"30cm":{"34":{"symbol":"℃","name":"土壤温度","value":"12.8125"},"82":{"symbol":"%","name":"水分含量","value":"26.56"},"83":{"symbol":"μS/cm","name":"盐分含量","value":"1347.48"}},"地表":{"34":{"symbol":"℃","name":"土壤温度","value":"12.3125"},"50":{"symbol":"v","name":"电池电量","value":"3.564"},"54":{"symbol":"v","name":"外部输入电压","value":"7.353"}},"10cm":{"34":{"symbol":"℃","name":"土壤温度","value":"11.25"},"82":{"symbol":"%","name":"水分含量","value":"26.65"},"83":{"symbol":"μS/cm","name":"盐分含量","value":"1281.91"}},"40cm":{"34":{"symbol":"℃","name":"土壤温度","value":"13.1875"},"82":{"symbol":"%","name":"水分含量","value":"27.42"},"83":{"symbol":"μS/cm","name":"盐分含量","value":"1267.95"}},"20cm":{"34":{"symbol":"℃","name":"土壤温度","value":"12.3125"},"82":{"symbol":"%","name":"水分含量","value":"25.89"},"83":{"symbol":"μS/cm","name":"盐分含量","value":"1352.62"}}},"sn":"11606501137138","collect_time":1639717200000}]
+```
+
+
+
+
+
+
+
+```
+7B300100017765432197654321943AA0027150A0D122B1800010100765432190A765432190A010100283900BE2E000000DD08000000000000DC2F7D0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+```
+
+```sql
+最后一条CO2
+ALTER TABLE `ecology_data`.`mon_last_co2_data` 
+MODIFY COLUMN `co2_concentration` int(5) NULL DEFAULT NULL COMMENT '二氧化碳浓度（0～2000ppm）1位小数' AFTER `msg_type`;
+
+
+
+
+ALTER TABLE `ecology_data`.`proj_co2_data` 
+MODIFY COLUMN `co2_concentration` decimal(5, 1) NULL DEFAULT NULL COMMENT '二氧化碳浓度（0～2000ppm）1位小数' AFTER `msg_type`;
+ALTER TABLE `ecology_data`.`mon_last_co2_data` 
+MODIFY COLUMN `co2_concentration` decimal(6, 1) NULL DEFAULT NULL COMMENT '二氧化碳浓度（0～2000ppm）1位小数' AFTER `msg_type`;
+
+
+DROP TABLE mon_last_co2_data ;
+DROP TABLE proj_co2_data ;
+
+CREATE TABLE `mon_last_co2_data` (
+  `id` char(36) NOT NULL COMMENT '主键id',
+  `city_code` int(11) NOT NULL COMMENT '所属城市',
+  `region_code` int(11) NOT NULL COMMENT '所在行政区',
+  `zone_id` char(36) NOT NULL COMMENT '片区id',
+  `sensor_code` varchar(50) NOT NULL COMMENT '设备编号',
+  `gateway_name` varchar(32) NOT NULL COMMENT '网关名称',
+  `device_type` int(2) DEFAULT NULL COMMENT '设备类型',
+  `address` varchar(100) NOT NULL COMMENT '传感器地址',
+  `sensor_type` int(2) DEFAULT NULL COMMENT '传感器类型',
+  `send_time` datetime NOT NULL COMMENT '发送时间',
+  `receive_time` datetime NOT NULL COMMENT '接收时间',
+  `version_soft` varchar(10) DEFAULT NULL COMMENT '软件版本， 1.01，最大可表示 15.15',
+  `version_hard` varchar(10) DEFAULT NULL COMMENT '硬件版本， 1.01，最大可表示 15.15',
+  `msg_type` int(2) DEFAULT NULL COMMENT '消息类型',
+  `co2_concentration` decimal(6,1) DEFAULT NULL COMMENT '二氧化碳浓度（0～2000ppm）1位小数',
+  `temperature` decimal(5,1) DEFAULT NULL COMMENT '温度',
+  `humidity` int(5) DEFAULT NULL COMMENT '湿度',
+  `atmospheric` decimal(6,1) DEFAULT NULL COMMENT '大气压',
+  `wind_direct` int(5) DEFAULT NULL COMMENT '风向',
+  `wind_angle` int(5) DEFAULT NULL COMMENT '风向角度',
+  `wind_speed` int(5) DEFAULT NULL COMMENT '风速',
+  `wind_level` int(5) DEFAULT NULL COMMENT '风的等级',
+  `pm2` decimal(6,1) DEFAULT NULL COMMENT 'PM2.5',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='最近一条Co2传感器传感原始数据';
+
+CREATE TABLE `proj_co2_data` (
+  `id` char(36) NOT NULL COMMENT '主键id',
+  `city_code` int(11) NOT NULL COMMENT '所属城市',
+  `region_code` int(11) NOT NULL COMMENT '所在行政区',
+  `zone_id` char(36) NOT NULL COMMENT '片区id',
+  `hop` int(3) DEFAULT NULL COMMENT '传感器到 GW 的跳数，传感器直接传送到 GW 时，hop=1',
+  `net_id` int(4) DEFAULT NULL COMMENT '网段号，1～4095',
+  `seq` int(5) DEFAULT NULL COMMENT '传感器帧序号，传感器发一次增 1，可以用来统计丢包率',
+  `rssi` int(3) DEFAULT NULL COMMENT '接收到传感器数据的 RSSI',
+  `address` varchar(16) DEFAULT NULL COMMENT '接收到传感器数据的 传感器地址',
+  `sensor_code` varchar(50) NOT NULL COMMENT '设备编号',
+  `gateway_name` varchar(32) NOT NULL COMMENT '网关名称',
+  `device_type` int(2) DEFAULT NULL COMMENT '设备类型',
+  `sensor_type` int(2) DEFAULT NULL COMMENT '传感器类型',
+  `send_time` datetime NOT NULL COMMENT '发送时间',
+  `receive_time` datetime NOT NULL COMMENT '接收时间',
+  `version_soft` varchar(10) DEFAULT NULL COMMENT '软件版本， 1.01，最大可表示 15.15',
+  `version_hard` varchar(10) DEFAULT NULL COMMENT '硬件版本， 1.01，最大可表示 15.15',
+  `msg_type` int(2) DEFAULT NULL COMMENT '消息类型',
+  `co2_concentration` decimal(6,1) DEFAULT NULL COMMENT '二氧化碳浓度（0～2000ppm）1位小数',
+  `temperature` decimal(5,1) DEFAULT NULL COMMENT '温度',
+  `humidity` int(5) DEFAULT NULL COMMENT '湿度',
+  `atmospheric` decimal(6,1) DEFAULT NULL COMMENT '大气压',
+  `wind_direct` int(5) DEFAULT NULL COMMENT '风向',
+  `wind_angle` int(5) DEFAULT NULL COMMENT '风向角度',
+  `wind_speed` int(5) DEFAULT NULL COMMENT '风速',
+  `wind_level` int(5) DEFAULT NULL COMMENT '风的等级',
+  `pm2` decimal(6,1) DEFAULT NULL COMMENT 'PM2.5',
+  `payload` varchar(255) DEFAULT NULL COMMENT '原始数据',
+  `reserved` varchar(32) DEFAULT NULL COMMENT '保留字段',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Co2传感器数据表';
+
+
+
+
+
+
+
+
+
+```
+
+
+
+> 一张图
+
+```
+猛兽类
+	狮
+	 非洲狮
+	虎
+	豹
+	狼
+	豺
+非猛兽类
+	
+List<兽类>
+兽类：type name list
+
+
+
+
+图上数据：
+	动物园名称 物种数 存栏量 
+	城市 占比
+
+
+
+数据库字段：
+繁育场 ： 新增区分动物园和繁育场
+物种清单：新增区分猛兽类、非猛兽类，兽类、鸟类，狮、虎、豹...
+
+
+id parentId 猛兽/狮
+id parentId 非猛兽
+
+
+id typeId 物种清单id
+
+
+```
+
+
+
+
+
+### 智慧船坞气体与气象传感器 数据帧 
+
+```sql
+CREATE TABLE `proj_ship_meteorological_data` (
+  `id` char(36) NOT NULL COMMENT '主键id',
+  `city_code` int(11) NOT NULL COMMENT '所属城市',
+  `region_code` int(11) NOT NULL COMMENT '所在行政区',
+  `zone_id` char(36) NOT NULL COMMENT '片区id',
+  `hop` int(3) DEFAULT NULL COMMENT '传感器到 GW 的跳数，传感器直接传送到 GW 时，hop=1',
+  `net_id` int(4) DEFAULT NULL COMMENT '网段号，1～4095',
+  `seq` int(5) DEFAULT NULL COMMENT '传感器帧序号，传感器发一次增 1，可以用来统计丢包率',
+  `rssi` int(3) DEFAULT NULL COMMENT '接收到传感器数据的 RSSI',
+  `address` varchar(16) DEFAULT NULL COMMENT '接收到传感器数据的 传感器地址',
+  `sensor_code` varchar(50) NOT NULL COMMENT '设备编号',
+  `gateway_name` varchar(32) NOT NULL COMMENT '网关名称',
+  `device_type` int(2) DEFAULT NULL COMMENT '设备类型',
+  `sensor_type` int(2) DEFAULT NULL COMMENT '传感器类型',
+   `msg_type` int(2) DEFAULT NULL COMMENT '消息类型',
+  `send_time` datetime NOT NULL COMMENT '发送时间',
+  `receive_time` datetime NOT NULL COMMENT '接收时间',
+    `wind_speed` decimal(7,1) DEFAULT NULL COMMENT '风速，单位 m/s，分辨率 0.1',
+    `wind_angle` int(7) DEFAULT NULL COMMENT '风向，单位°，分辨率 1.0',
+    
+    `water_level` decimal(7,1) DEFAULT NULL COMMENT '水位值，单位 mm，分辨率 1.0',
+    `so2_alarm_level` int(2) DEFAULT NULL COMMENT '二氧化硫报警等级',
+    `so2_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '二氧化硫报警阈值 1，单位 ppm，分辨
+率 0.1',
+    `so2_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '二氧化硫报警阈值 2，单位 ppm，分辨
+率 0.1',
+    `co_alarm_level` int(2) DEFAULT NULL COMMENT '一氧化碳浓度，单位 ppm，分辨率 0.1',
+    `co_concentrations` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳浓度，单位 ppm，分辨率 0.1',
+    `co_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳报警阈值 1，单位 ppm，分辨
+率 0.1',
+    `co_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳报警阈值 2，单位 ppm，分辨
+率 0.1',
+    
+    `h2s_alarm_level` int(2) DEFAULT NULL COMMENT '硫化氢浓度，单位 ppm，分辨率 0.1',
+    `h2s_concentrations` decimal(7,1) DEFAULT NULL COMMENT '硫化氢浓度，单位 ppm，分辨率 0.1',
+    `h2s_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '硫化氢报警阈值 1，单位 ppm，分辨
+率 0.1',
+    `h2s_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '硫化氢报警阈值 2，单位 ppm，分辨
+率 0.1',
+    `air_temp` decimal(7,1) DEFAULT NULL COMMENT '空气温度，单位℃，分辨率 0.1',
+    `air_humi` decimal(7,1) DEFAULT NULL COMMENT '空气湿度，单位%，分辨率 0.1',
+    `wind_comm_status` tinyint(2) DEFAULT NULL COMMENT '风向、风速传感器 0-通讯中断；1-通讯正常；2-数据异常',
+  `water_comm_status` tinyint(2) DEFAULT NULL COMMENT '水位检测传感器',
+  `co2_comm_status` tinyint(2) DEFAULT NULL COMMENT ' 二氧化硫气体传感器',
+  `co_comm_status` tinyint(2) DEFAULT NULL COMMENT '一氧化碳气体传感器',
+  `h2s_comm_status` tinyint(2) DEFAULT NULL COMMENT '硫化氢气体传感器',
+  `air_comm_status` tinyint(2) DEFAULT NULL COMMENT '空气温湿度传感器',
+  `payload` varchar(255) DEFAULT NULL COMMENT '原始数据',
+  `reserved` varchar(32) DEFAULT NULL COMMENT '保留字段',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='智慧船坞气体与气象传感器数据表';
+
+
+
+常用单词
+shipMeteorological
+ShipMeteorological
+
+智慧船坞气体与气象传感器
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
