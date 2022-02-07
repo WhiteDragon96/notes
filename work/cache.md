@@ -14,9 +14,9 @@
 .\npc.exe install -server=121.196.208.104:18024 -vkey=zwsy7q5b76pem9pm -type=tcp
 ```
 
+### DOCKER启动
 
-
-`activeMQ`
+#### `activeMQ`
 
 ```shell
 docker run -d -p 61616:61616 -p 8161:8161 \
@@ -50,25 +50,25 @@ rmohr/activemq
 
 
 
-
+#### bilibili
 
 ```shell
 docker run -d --name=bilibili-helper-hyb --restart unless-stopped -v /appdata/bilibili-hyb-config:/config  superng6/bilibili-helper:latest
 ```
 
-`epic`
+#### `epic`
 
 ```shell
 docker run -it --name epic -e TZ=Asia/Shanghai --restart unless-stopped -v /appdata/epic:/User_Data luminoleon/epicgames-claimer -r 10:30 -a -ps SCT42461T86ZEIJOoskFirJMdmXboRFYX 
 ```
 
-
+#### xxx-job
 
 ```shell
 docker run -e PARAMS="--spring.datasource.url=jdbc:mysql://47.114.105.19:8888/xxl_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai" -e PARAMS="--spring.datasource.username=root" -e PARAMS="--spring.datasource.password=123456" -e PARAMS="--spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver" -p 8080:8080 -v /appdata/xxl-job-log:/data/applogs --name xxl-job-admin02  -d xuxueli/xxl-job-admin:2.3.0
 ```
 
-`阿里云挂载服务`
+#### `阿里云挂载服务`
 
 ```shell
 docker run -d --name=webdav-aliyundriver --restart=always -p 8787:8080 -v /appdata/aliyundriver/aliyundriver:/etc/aliyun-driver/ -e TZ="Asia/Shanghai" -e ALIYUNDRIVE_REFRESH_TOKEN="4479b0f29d3945cdb277dd731364820e" -e ALIYUNDRIVE_AUTH_PASSWORD="tangcs123" -e JAVA_OPTS="-Xmx1g" zx5253/webdav-aliyundriver
@@ -80,6 +80,75 @@ java -jar webdav.jar --aliyundrive.refresh-token="b18b8b24bad34b7880166cc91fa56e
 # JAVA_OPTS 可修改最大内存占用，比如 -e JAVA_OPTS="-Xmx512m" 表示最大内存限制为512m
 
 ```
+
+#### 数据库
+
+```
+
+docker run -d -p 3305:3306 -v /appdata/mysql/conf:/etc/mysql/conf.d -v /appdata/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=T@ng7167451959  --name mysql001 mysql:5.7.32
+5.7.32
+```
+
+#### redis
+
+```
+docker run -p 6379:6379 --name redis -v /appdata/redis/conf/redis.conf:/etc/redis/redis.conf -v /appdata/redis/data:/data -d redis redis-server /etc/redis/redis.conf --appendonly yes
+```
+
+#### testspeed
+
+```
+docker run -d --name testspeed -p 9001:80 -it badapple9/speedtest-x
+```
+
+#### nginx
+
+```shell
+docker run --name nginx -p 80:80 -v /appdata/nginx/nginx.conf:/etc/nginx/nginx.conf -v /appdata/nginx/log:/var/log/nginx -v /appdata/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf -v /appdata/nginx/html:/usr/share/nginx/html -d nginx
+```
+
+#### Jenkins
+
+```
+docker run -p 8484:8080 -p 50000:50000 --name jenkins -d -v /appdata/jenkins_data:/var/jenkins_home jenkinsci/blueocean
+```
+
+
+
+#### Nacos
+
+```shell
+docker  run \
+--name nacos -d \
+-p 28848:8848 \
+--privileged=true \
+--restart=always \
+-e SPRING_DATASOURCE_PLATFORM=mysql \
+-e MYSQL_SERVICE_HOST=119.91.204.244 \
+-e MYSQL_SERVICE_PORT=3305 \
+-e MYSQL_SERVICE_DB_NAME=nacos \
+-e MYSQL_SERVICE_USER=root \
+-e MYSQL_SERVICE_PASSWORD=T@ng7167451959 \
+-e JVM_XMS=256m \
+-e JVM_XMX=256m \
+-e MODE=standalone \
+-e PREFER_HOST_MODE=hostname \
+-v /mydata/nacos/logs:/home/nacos/logs \
+-v /mydata/nacos/init.d/custom.properties:/home/nacos/init.d/custom.properties \
+nacos/nacos-server
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -125,9 +194,20 @@ INSERT INTO `bladex`.`blade_dict_biz` (`id`, `tenant_id`, `parent_id`, `code`, `
 
 
 
-
-
-
+server {
+        listen       8080;
+        server_name  localhost;
+        charset utf-8;
+	location /api/ {
+	    proxy_pass http://127.0.0.1:80/;
+	}
+	location / { 
+	    proxy_pass http://localhost:8888;
+	}
+	/ /baiduapi/ {
+        proxy_pass https://www.baidu.com/;
+    }
+    }
 
 
 
@@ -648,34 +728,27 @@ CREATE TABLE `proj_ship_meteorological_data` (
   `gateway_name` varchar(32) NOT NULL COMMENT '网关名称',
   `device_type` int(2) DEFAULT NULL COMMENT '设备类型',
   `sensor_type` int(2) DEFAULT NULL COMMENT '传感器类型',
-   `msg_type` int(2) DEFAULT NULL COMMENT '消息类型',
+  `msg_type` int(2) DEFAULT NULL COMMENT '消息类型',
   `send_time` datetime NOT NULL COMMENT '发送时间',
   `receive_time` datetime NOT NULL COMMENT '接收时间',
-    `wind_speed` decimal(7,1) DEFAULT NULL COMMENT '风速，单位 m/s，分辨率 0.1',
-    `wind_angle` int(7) DEFAULT NULL COMMENT '风向，单位°，分辨率 1.0',
-    
-    `water_level` decimal(7,1) DEFAULT NULL COMMENT '水位值，单位 mm，分辨率 1.0',
-    `so2_alarm_level` int(2) DEFAULT NULL COMMENT '二氧化硫报警等级',
-    `so2_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '二氧化硫报警阈值 1，单位 ppm，分辨
-率 0.1',
-    `so2_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '二氧化硫报警阈值 2，单位 ppm，分辨
-率 0.1',
-    `co_alarm_level` int(2) DEFAULT NULL COMMENT '一氧化碳浓度，单位 ppm，分辨率 0.1',
-    `co_concentrations` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳浓度，单位 ppm，分辨率 0.1',
-    `co_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳报警阈值 1，单位 ppm，分辨
-率 0.1',
-    `co_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳报警阈值 2，单位 ppm，分辨
-率 0.1',
-    
-    `h2s_alarm_level` int(2) DEFAULT NULL COMMENT '硫化氢浓度，单位 ppm，分辨率 0.1',
-    `h2s_concentrations` decimal(7,1) DEFAULT NULL COMMENT '硫化氢浓度，单位 ppm，分辨率 0.1',
-    `h2s_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '硫化氢报警阈值 1，单位 ppm，分辨
-率 0.1',
-    `h2s_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '硫化氢报警阈值 2，单位 ppm，分辨
-率 0.1',
-    `air_temp` decimal(7,1) DEFAULT NULL COMMENT '空气温度，单位℃，分辨率 0.1',
-    `air_humi` decimal(7,1) DEFAULT NULL COMMENT '空气湿度，单位%，分辨率 0.1',
-    `wind_comm_status` tinyint(2) DEFAULT NULL COMMENT '风向、风速传感器 0-通讯中断；1-通讯正常；2-数据异常',
+  `wind_speed` decimal(7,1) DEFAULT NULL COMMENT '风速，单位 m/s，分辨率 0.1',
+  `wind_angle` int(7) DEFAULT NULL COMMENT '风向，单位°，分辨率 1.0',
+  `water_level` int(7) DEFAULT NULL COMMENT '水位值，单位 mm，分辨率 1.0',
+  `so2_alarm_level` int(2) DEFAULT NULL COMMENT '二氧化硫报警等级',
+  `so2_concentrations` decimal(7,1) DEFAULT NULL COMMENT '二氧化硫浓度，单位 ppm，分辨率 0.1',
+  `so2_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '二氧化硫报警阈值 1，单位 ppm，分辨\r\n率 0.1',
+  `so2_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '二氧化硫报警阈值 2，单位 ppm，分辨\r\n率 0.1',
+  `co_alarm_level` int(2) DEFAULT NULL COMMENT '一氧化碳浓度，单位 ppm，分辨率 0.1',
+  `co_concentrations` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳浓度，单位 ppm，分辨率 0.1',
+  `co_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳报警阈值 1，单位 ppm，分辨\r\n率 0.1',
+  `co_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳报警阈值 2，单位 ppm，分辨\r\n率 0.1',
+  `h2s_alarm_level` int(2) DEFAULT NULL COMMENT '硫化氢浓度，单位 ppm，分辨率 0.1',
+  `h2s_concentrations` decimal(7,1) DEFAULT NULL COMMENT '硫化氢浓度，单位 ppm，分辨率 0.1',
+  `h2s_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '硫化氢报警阈值 1，单位 ppm，分辨\r\n率 0.1',
+  `h2s_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '硫化氢报警阈值 2，单位 ppm，分辨\r\n率 0.1',
+  `air_temp` decimal(7,1) DEFAULT NULL COMMENT '空气温度，单位℃，分辨率 0.1',
+  `air_humi` decimal(7,1) DEFAULT NULL COMMENT '空气湿度，单位%，分辨率 0.1',
+  `wind_comm_status` tinyint(2) DEFAULT NULL COMMENT '风向、风速传感器 0-通讯中断；1-通讯正常；2-数据异常',
   `water_comm_status` tinyint(2) DEFAULT NULL COMMENT '水位检测传感器',
   `co2_comm_status` tinyint(2) DEFAULT NULL COMMENT ' 二氧化硫气体传感器',
   `co_comm_status` tinyint(2) DEFAULT NULL COMMENT '一氧化碳气体传感器',
@@ -687,6 +760,66 @@ CREATE TABLE `proj_ship_meteorological_data` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='智慧船坞气体与气象传感器数据表';
+
+CREATE TABLE `mon_last_ship_meteorological_data` (
+  `id` char(36) NOT NULL COMMENT '主键id',
+  `city_code` int(11) NOT NULL COMMENT '所属城市',
+  `region_code` int(11) NOT NULL COMMENT '所在行政区',
+  `zone_id` char(36) NOT NULL COMMENT '片区id',
+  `hop` int(3) DEFAULT NULL COMMENT '传感器到 GW 的跳数，传感器直接传送到 GW 时，hop=1',
+  `net_id` int(4) DEFAULT NULL COMMENT '网段号，1～4095',
+  `seq` int(5) DEFAULT NULL COMMENT '传感器帧序号，传感器发一次增 1，可以用来统计丢包率',
+  `rssi` int(3) DEFAULT NULL COMMENT '接收到传感器数据的 RSSI',
+  `address` varchar(16) DEFAULT NULL COMMENT '接收到传感器数据的 传感器地址',
+  `sensor_code` varchar(50) NOT NULL COMMENT '设备编号',
+  `gateway_name` varchar(32) NOT NULL COMMENT '网关名称',
+  `device_type` int(2) DEFAULT NULL COMMENT '设备类型',
+  `sensor_type` int(2) DEFAULT NULL COMMENT '传感器类型',
+  `msg_type` int(2) DEFAULT NULL COMMENT '消息类型',
+  `send_time` datetime NOT NULL COMMENT '发送时间',
+  `receive_time` datetime NOT NULL COMMENT '接收时间',
+  `wind_speed` decimal(7,1) DEFAULT NULL COMMENT '风速，单位 m/s，分辨率 0.1',
+  `wind_angle` int(7) DEFAULT NULL COMMENT '风向，单位°，分辨率 1.0',
+  `water_level` int(7) DEFAULT NULL COMMENT '水位值，单位 mm，分辨率 1.0',
+  `so2_alarm_level` int(2) DEFAULT NULL COMMENT '二氧化硫报警等级',
+  `so2_concentrations` decimal(7,1) DEFAULT NULL COMMENT '二氧化硫浓度，单位 ppm，分辨率 0.1',
+  `so2_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '二氧化硫报警阈值 1，单位 ppm，分辨\r\n率 0.1',
+  `so2_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '二氧化硫报警阈值 2，单位 ppm，分辨\r\n率 0.1',
+  `co_alarm_level` int(2) DEFAULT NULL COMMENT '一氧化碳浓度，单位 ppm，分辨率 0.1',
+  `co_concentrations` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳浓度，单位 ppm，分辨率 0.1',
+  `co_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳报警阈值 1，单位 ppm，分辨\r\n率 0.1',
+  `co_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '一氧化碳报警阈值 2，单位 ppm，分辨\r\n率 0.1',
+  `h2s_alarm_level` int(2) DEFAULT NULL COMMENT '硫化氢浓度，单位 ppm，分辨率 0.1',
+  `h2s_concentrations` decimal(7,1) DEFAULT NULL COMMENT '硫化氢浓度，单位 ppm，分辨率 0.1',
+  `h2s_alarm_th1` decimal(7,1) DEFAULT NULL COMMENT '硫化氢报警阈值 1，单位 ppm，分辨\r\n率 0.1',
+  `h2s_alarm_th2` decimal(7,1) DEFAULT NULL COMMENT '硫化氢报警阈值 2，单位 ppm，分辨\r\n率 0.1',
+  `air_temp` decimal(7,1) DEFAULT NULL COMMENT '空气温度，单位℃，分辨率 0.1',
+  `air_humi` decimal(7,1) DEFAULT NULL COMMENT '空气湿度，单位%，分辨率 0.1',
+  `wind_comm_status` tinyint(2) DEFAULT NULL COMMENT '风向、风速传感器 0-通讯中断；1-通讯正常；2-数据异常',
+  `water_comm_status` tinyint(2) DEFAULT NULL COMMENT '水位检测传感器',
+  `co2_comm_status` tinyint(2) DEFAULT NULL COMMENT ' 二氧化硫气体传感器',
+  `co_comm_status` tinyint(2) DEFAULT NULL COMMENT '一氧化碳气体传感器',
+  `h2s_comm_status` tinyint(2) DEFAULT NULL COMMENT '硫化氢气体传感器',
+  `air_comm_status` tinyint(2) DEFAULT NULL COMMENT '空气温湿度传感器',
+  `payload` varchar(255) DEFAULT NULL COMMENT '原始数据',
+  `reserved` varchar(32) DEFAULT NULL COMMENT '保留字段',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='最近一条智慧船坞气体与气象传感器数据表';
+
+
+INSERT INTO `ecology_data`.`sys_menu` (`MENU_ID`, `PARENT_ID`, `NAME`, `URL`, `PERMS`, `TYPE`, `ICON`, `ORDER_NUM`, `CREATE_BY`, `CREATE_TIME`, `UPDATE_BY`, `UPDATE_TIME`, `DELETED`) VALUES ('808e65f2b37e4008ae37419876b98b47', 'b302df62c7eb433d98e25a56c13ff24d', '气体与气象传感器', '/mon/shipMeteorologicalmonitormonitor', NULL, 1, 'devicemonitor', 11.0000000000, 'ADMIN001', '2022-01-07 11:29:46', NULL, NULL, 0);
+INSERT INTO `ecology_data`.`sys_menu` (`MENU_ID`, `PARENT_ID`, `NAME`, `URL`, `PERMS`, `TYPE`, `ICON`, `ORDER_NUM`, `CREATE_BY`, `CREATE_TIME`, `UPDATE_BY`, `UPDATE_TIME`, `DELETED`) VALUES ('d8b2dd1349ea41e2b04997b4756e857c', '7b4aa054bd7248eaa33c6bce5a4d513e', '气体与气象传感器原始数据', 'proj/shipmeteorologicaldata', NULL, 1, 'transactionlist', 15.0000000000, 'ADMIN001', '2022-01-07 14:30:08', NULL, NULL, 0);
+
+
+
+
+
+
+
+
+
 
 
 
@@ -705,6 +838,195 @@ ShipMeteorological
 
 
 
+###  人工繁育
+
+#### TIP
+
+```
+breed_species
+新增引进单位 introduce_unit
+
+aco_animal_change 变化记录表
+新增死亡个体登记表照片 table_photo_url
+```
+
+
+
+#### 人工繁育手动录入-检测繁育场是否存在
+
+**接口说明**
+
+> 人工繁育手动录入-检测繁育场是否存在
+
+**接口版本**
+
+> v1
+
+**接口地址**
+
+> /api/shengting-aco/breed/check-breed
+
+**请求方法**
+
+> GET
+
+**数据提交方式**
+
+> application/json
+
+**请求参数**
+
+| 参数名称 | 数据类型 | 是否必须 | 参数描述   |
+| :------- | :------- | :------- | :--------- |
+| name     | String   | 是       | 繁育场名称 |
+
+**返回参数**
+
+| 参数名称 | 数据类型 | 是否必须 | 参数描述                                                     |
+| :------- | :------- | :------- | :----------------------------------------------------------- |
+| code     | int      | true     | 返回码 200表示修改成功，其他表示失败                         |
+| msg      | String   | true     | 返回描述-记录接口执行情况说明信息 `操作成功` 表示成功，其他表示失败 |
+| success  | boolean  | false    | true表示成功，fasle表示失败                                  |
+| data     | Object   | true     | 返回结果对象                                                 |
+
+
+
+data 说明
+
+| 参数名称    | 数据类型 | 是否必须 | 参数描述        |
+| :---------- | :------- | :------- | :-------------- |
+| placeName   | String   | true     | 单位名称        |
+| code        | String   | true     | 证件号/信用代码 |
+| charge      | String   | false    | 负责人          |
+| phone       | String   | false    | 负责人电话      |
+| chargeLegal | String   | false    | 法人            |
+| address     | String   | false    | 详细地址        |
+| chargeTec   | String   | false    | 技术负责人      |
+
+
+
+
+
+**返回参数举例**
+
+```json
+
+```
+
+
+
+
+
+#### 人工繁育手动录入-提交数据
+
+**接口说明**
+
+> 人工繁育手动录入-提交数据
+
+**接口版本**
+
+> v1
+
+**接口地址**
+
+> /api/shengting-aco/breed/add
+
+**请求方法**
+
+> POST
+
+**数据提交方式**
+
+> application/json
+
+**请求参数**
+
+| 参数名称        | 数据类型 | 是否必须 | 参数描述       |
+| :-------------- | :------- | :------- | :------------- |
+| company         | Object   | 是       | 繁育场信息     |
+| breed           | Object   | 是       | 繁育信息       |
+| breedSpecies    | List     | 是       | 物种信息       |
+| breedChangeInfo | List     | 否       | 繁育场变更信息 |
+
+company说明
+
+| 参数名称           | 参数描述   | 是否必须 | 数据类型 |
+| :----------------- | :--------- | :------- | :------- |
+| company.address    | 单位地址   | false    | string   |
+| company.creditCode | 信用编码   | false    | string   |
+| company.frdb       | 法人代表   | false    | string   |
+| company.lxdh       | 联系人电话 | false    | string   |
+| company.lxr        | 联系人     | false    | string   |
+| company.name       | 单位名称   | true     | string   |
+
+breed说明
+
+| 参数名称               | 参数描述                                         | 是否必须 | 数据类型 |
+| :--------------------- | :----------------------------------------------- | :------- | :------- |
+| breed.applyTime        | 申请时间                                         | false    | string   |
+| breed.cityCode         | 市                                               | false    | string   |
+| breed.districtCode     | 区                                               | false    | string   |
+| breed.purpose          | 繁育目的种用、公众展示展演、药用、科学研究、其他 | false    | string   |
+| breed.technologyPic    | 技术负责人                                       | false    | string   |
+| breed.breedType        | 繁育许可申请类别 1.新办证 2.变更 3.换证 4.增项   | true     | int      |
+| breed.approvalNumber   | 许可批文号                                       | true     | string   |
+| breed.permitContentUrl | 上传附件地址                                     | false    | string   |
+
+breedSpecies 说明
+
+| 参数名称                   | 参数描述                  | 是否必须 | 数据类型       |
+| :------------------------- | :------------------------ | :------- | :------------- |
+| breedSpecies.cname         | 申请繁育物种种类 种类名称 | false    | string         |
+| breedSpecies.mj            | 面积                      | false    | string         |
+| breedSpecies.speciesCount  | 申请数量                  | false    | int            |
+| breedSpecies.unit          | 单位                      | false    | string         |
+| breedSpecies.introduceUnit | 引进单位                  | false    | string         |
+| breedSpecies.type          | 变更类型                  | false    | string         |
+| breedSpecies.beforeNum     | 变更前准予数量            | false    | integer(int32) |
+| breedSpecies.beforeNum     | 变更前准予数量            | false    | integer(int32) |
+
+breedChangeInfo说明
+
+| 参数名称                         | 参数描述   | 是否必须 | 数据类型 |
+| :------------------------------- | :--------- | :------- | :------- |
+| breedChangeInfo.type             | 变更类型   | false    | string   |
+| breedChangeInfo.changeBeforeInfo | 变更前信息 | false    | string   |
+| breedChangeInfo.changeAfterInfo  | 变更后信息 | false    | string   |
+
+**返回参数**
+
+| 参数名称 | 数据类型 | 是否必须 | 参数描述                                                     |
+| :------- | :------- | :------- | :----------------------------------------------------------- |
+| code     | int      | true     | 返回码 200表示修改成功，其他表示失败                         |
+| msg      | String   | true     | 返回描述-记录接口执行情况说明信息 `操作成功` 表示成功，其他表示失败 |
+| success  | boolean  | false    | true表示成功，fasle表示失败                                  |
+
+
+
+```shell
+docker run --name postgres -e POSTGRES_PASSWORD=tangcs123 -p 5432:5432 -v /mydata/postgressql/data:/var/lib/postgresql/data -d postgres
+```
+
+
+
+#### 修改存栏量
+
+```
+ 新增
+ isMaintain 是否维护 0、否 1、是
+
+
+新增死亡个体登记表照片url
+tablePhotoUrl
+
+ 个体编号列表
+ api/shengting-aco/animalinfo/list-code
+ 参数：
+ nameCh: 大熊猫
+ placeId: 1432150789007314946
+ 返回：
+ List<Code>
+```
 
 
 
@@ -714,6 +1036,40 @@ ShipMeteorological
 
 
 
+ #### 许可证表
+
+浙林驯繁
+
+年份
+
+序号
+
+
+
+```sql
+CREATE TABLE `aco_breed_place_permit_number` (
+  `id` bigint(64) NOT NULL,
+  `place_id` bigint(64) DEFAULT NULL COMMENT '繁育场id',
+  `effective_time` datetime DEFAULT NULL COMMENT '繁育场许可证生效时间',
+  `expiration_time` datetime DEFAULT NULL COMMENT '繁育场许可证失效时间',
+    `permit_number` varchar(64) COMMENT '许可证号',
+  `permit_number_prefix` varchar(64) COMMENT '许可证前缀',
+  `permit_number_year` int(4) COMMENT '许可证年份',
+    `permit_number_sort` int(11) COMMENT '许可证序号',
+   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    `is_deleted` int(2) DEFAULT '0' COMMENT '是否已删除 0-未删除 1-已删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='繁育场许可证表';
+```
+
+#### 打印
+
+打印物种页面
+
+- /api/shengting-aco/breedplacespecies/selectSpecies  加个参数 permitNumberType 1-浙江省陆⽣野⽣动物⼈⼯繁育许可证 2-国家重点点保护陆⽣野⽣动物⼈⼯繁育许可证
+
+  
 
 
 
@@ -723,5 +1079,8 @@ ShipMeteorological
 
 
 
-
+```
+以前有多个许可证编号
+生成两个许可证 没有许可证编号显示什么
+```
 
