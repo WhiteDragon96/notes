@@ -138,7 +138,17 @@ docker  run \
 nacos/nacos-server
 ```
 
+#### 为知笔记
 
+```shell
+docker run --name wiz --restart=always -it -d -v  appdata/wizdata:/wiz/storage -v  /etc/localtime:/etc/localtime -p 5757:80 -p 9269:9269/udp  wiznote/wizserver
+```
+
+#### OneDev
+
+```shell
+docker run --name onedev -d --restart always -v /var/run/docker.sock:/var/run/docker.sock -v /appdata/onedev:/opt/onedev -p 6610:6610 -p 6611:6611 1dev/server
+```
 
 
 

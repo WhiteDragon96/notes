@@ -58,13 +58,13 @@ redis key命名时为什么防止重复一般 前缀+key,前缀名名时用：�
   ```Java
   @Data
   public class Task {
-
+  
       private Long id;
       private String name;
       private String content;
       private int type;
       private int status;
-
+  
       public Task(Long id, String name, String content, int type, int status) {
           this.id = id;
           this.name = name;
@@ -72,7 +72,7 @@ redis key命名时为什么防止重复一般 前缀+key,前缀名名时用：�
           this.type = type;
           this.status = status;
       }
-
+  
       public Task(TaskBuilder taskBuilder) {
           this.id = taskBuilder.id;
           this.name = taskBuilder.name;
@@ -80,43 +80,61 @@ redis key命名时为什么防止重复一般 前缀+key,前缀名名时用：�
           this.type = taskBuilder.type;
           this.status = taskBuilder.status;
       }
-
+  
       public static class TaskBuilder {
           private Long id;
           private String name;
           private String content;
           private int type;
           private int status;
-
+  
           public TaskBuilder(Long id, String name) {
               this.id = id;
               this.name = name;
           }
-
+  
           public TaskBuilder content(String content) {
               this.content = content;
               return this;
           }
-
+  
           public TaskBuilder type(int type) {
               this.type = type;
               return this;
           }
-
+  
           public TaskBuilder status(int status) {
               this.status = status;
               return this;
           }
-
+  
           public Task build() {
               return new Task(this);
           }
       }
   }
-
+  
   test:
   Task task = new Task.TaskBuilder(1239878L,"迪丽热巴").build();
   Task task1 = new Task.TaskBuilder(9527L,"古力娜扎").status(1).type(2).build();
   ```
-Lombok @Builder注解支持，易维护
+  Lombok @Builder注解支持，易维护
+
+
+
+#### CPU占用过高排查方法
+
+```
+1.先用top命令,找到cpu占用最高的进程 PID
+
+2.再用ps -mp pid -o THREAD,tid,time 查询pid进程中,那个线程的cpu占用率高 记住TID
+
+3.jstack 29099 >> xxx.log 打印出29099该进程下线程日志
+
+4.将xxx.log 日志文件下载到本地
+
+5.将查找到的 线程占用最高的 tid 第二步查到的线程 29108 转成16进制 — 71b4
+
+6.打开下载好的 xxx.log 通过 查找方式 找到 对应线程 进行排查
+```
 
