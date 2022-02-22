@@ -378,22 +378,457 @@ rpoplpush # 移除列表最后一个元素添加到新的列表
 2) "hello1"
 127.0.0.1:6379> lrange myotherlist 0 -1
 1) "hello2"
+####################################################
+linsert
+127.0.0.1:6379[1]> linsert list before 2 world # 2前面插
+(integer) 5
+127.0.0.1:6379[1]> lrange list 0 -1
+1) "10"
+2) "3"
+3) "world"
+4) "2"
+5) "1"
 
 ```
+
+> 小结
+
+- 它实际上是一个链表，before Node after ,left ,right 都可以插入值
+- 如果key不存在，创建新的链表，如果key存在，新增内容
+- 如果移除了所有值，空链表，也代表不存在！
+- 在两边插入或者改动值，效率最高！
 
 
 
 #### Set
 
-#### Hash
+set中的值不是重复的
 
-#### Zset
+```shell
+127.0.0.1:6379[2]> sadd myset hello tang love
+(integer) 3
+127.0.0.1:6379[2]> smembers myset
+1) "tang"
+2) "love"
+3) "hello"
+127.0.0.1:6379[2]> sismember myset hello # 判断某个值是否存在
+(integer) 1
+127.0.0.1:6379[2]> srem myset hello # 移除指定元素
+(integer) 1
+##############################################################
+set 无序不重复，抽随机
+127.0.0.1:6379[2]> srandmember myset # 随机取出一个元素
+"world"
+127.0.0.1:6379[2]> srandmember myset 2 # 随机取出指定个数元素
+1) "tang"
+2) "hello"
+127.0.0.1:6379[2]> spop myset #  随机删除一个元素
+"love"
+##############################################################
+将一个指定的值，移动导另一个set集合
+127.0.0.1:6379[2]> sadd myset hello world tang
+(integer) 3
+127.0.0.1:6379[2]> sadd myset2 set2
+(integer) 1
+127.0.0.1:6379[2]> smove myset myset2 hello #移动
+(integer) 1
+127.0.0.1:6379[2]> smembers myset2
+1) "hello"
+2) "set2"
+##############################################################
+微博，B站，共同关注（并集）
+数字集合类：
+ - 差集
+ - 交集
+ - 并集
+127.0.0.1:6379[2]> sdiff key1 key2 # 差集
+1) "a"
+2) "b"
+127.0.0.1:6379[2]> sinter key1 key2 # 交集
+1) "c"
+127.0.0.1:6379[2]> sunion key1 key2 # 并集
+1) "e"
+2) "b"
+3) "c"
+4) "a"
+5) "d"
+```
+
+#### Hash（哈希）
+
+Map集合，key-map 值是一个map集合，本质和String没有太大区别
+
+```shell
+127.0.0.1:6379[3]> hset myhash field1 tang # 设置一个具体的key-value值
+(integer) 1
+127.0.0.1:6379[3]> hget myhash field1
+"tang"
+127.0.0.1:6379[3]> hmset myhash field1 hello field2 world # 批量设置、获取
+OK
+127.0.0.1:6379[3]> hmget myhash field1 field2 field3
+1) "hello"
+2) "world"
+3) (nil)
+127.0.0.1:6379[3]> hgetall myhash # 获取所有的值
+1) "field1"
+2) "hello"
+3) "field2"
+4) "world"
+127.0.0.1:6379[3]> hdel myhash field1 # 删除指定的key
+(integer) 1
+##############################################################
+hlen
+127.0.0.1:6379[3]> hlen myhash # 获取长度
+(integer) 4
+127.0.0.1:6379[3]> hexists myyhash hello # 判断某个值是否存在
+(integer) 0
+127.0.0.1:6379[3]> hkeys myhash # 获取所有key
+1) "field2"
+2) "1"
+3) "2"
+4) "3"
+127.0.0.1:6379[3]> hvals myhash # 获取所有value
+1) "world"
+2) "hello"
+3) "world"
+4) "tang"
+##############################################################
+incr decr
+127.0.0.1:6379[3]> hset myhash field 5
+(integer) 1
+127.0.0.1:6379[3]> hincrby myhash field 1 #指定增量
+(integer) 6
+127.0.0.1:6379[3]> hincrby myhash field -1
+(integer) 5
+127.0.0.1:6379[3]> hsetnx myhash field4 hello # 如果不存在则可以设置
+(integer) 1
+127.0.0.1:6379[3]> hsetnx myhash field4 hello # 如果存在则不能设置
+(integer) 0
+
+```
+
+hash变更的数据user name age,尤其是用户信息之类的，经常变动的信息！hash更适合于对象的存储，String更加适合字符串存储
+
+#### Zset（有序集合）
+
+在set的基础上，增加了一个值，set k1 v1 zset k1 score1 v1
+
+```shell
+127.0.0.1:6379[4]> zadd myset 1 one
+(integer) 1
+127.0.0.1:6379[4]> zadd myset 2 two 3 three
+(integer) 2
+127.0.0.1:6379[4]> zrange myset 0 -1
+1) "one"
+2) "two"
+3) "three"
+127.0.0.1:6379[4]> zadd salary 2500 xiaohong 5000 zhangsan 20000 tang
+(integer) 3
+127.0.0.1:6379[4]> zrangebyscore salary -inf +inf # 排序 从最小到最大
+1) "xiaohong"
+2) "zhangsan"
+3) "tang"
+127.0.0.1:6379[4]> zrangebyscore salary -inf +inf withscores # 带上分数
+1) "xiaohong"
+2) "2500"
+3) "zhangsan"
+4) "5000"
+5) "tang"
+6) "20000"
+127.0.0.1:6379[4]> zrangebyscore salary -inf 5000 withscores # 设定最大值范围
+1) "xiaohong"
+2) "2500"
+3) "zhangsan"
+4) "5000"
+127.0.0.1:6379[4]> zrevrangebyscore salary +inf -inf # 从最大到最小
+1) "tang"
+2) "zhangsan"
+3) "xiaohong"
+127.0.0.1:6379[4]> zrem salary xiaohong # 移除元素
+(integer) 1
+127.0.0.1:6379[4]> zcard salary # 获取有序集合个数
+(integer) 2
+127.0.0.1:6379[4]> zcount myset 1 2 # 统计指定区间个数
+(integer) 2
+
+```
+
+其余一些API，可以通过官方文档查询。
+
+案例思路：存储班级成绩表，工资表排序！
+
+普通消息1、重要消息2，带权重判断，排行榜应用实现
 
 ### 三种特殊数据类型
 
-#### geospatial
+#### geospatial（地理位置）
+
+朋友的定位，附近的人，打车距离计算
+
+Redis的 Geo在redis3.2就有了，可以推算地理位置的信息，两地之间的距离，方圆几里的人
+
+可以查询一些数据：http://www.jsons.cn/lngcode/
+
+只有 六个命令
+
+![image-20220218153159458](https://raw.githubusercontent.com/WhiteDragon96/ImgCloud/main/data/imgimage-20220218153159458.png)
+
+> geoadd
+
+```shell
+# geoadd 添加地理位置
+# 规则 两级地理位置是无法添加的，一般会下载城市数据，直接通过java陈旭一次性导入 
+# 有效的经度从-180度到180度。有效的纬度从-85.05112878度到85.05112878度。当坐标位置超出上述指定范围时，该命令将会返回一个错误。
+# 参数：key （纬度、经度、名称）
+127.0.0.1:6379[5]> geoadd china:city 115.40 39.90 beijing
+(integer) 1
+127.0.0.1:6379[5]> geoadd china:city 121.47 41.23 shanghai
+(integer) 1
+127.0.0.1:6379[5]> geoadd china:city 106.50 29.53 chongqing 114.05 22.52 shenzhen
+(integer) 2
+127.0.0.1:6379[5]> geoadd china:city 120.16 30.24 hangzhou 108.96 34.26 xian
+
+```
+
+> geopos
+
+获得当前定位：一定是一个坐标值
+
+```shell
+127.0.0.1:6379[5]> geopos china:city beijing # 获取指定城市的经度和纬度
+1) 1) "115.40000170469284058"
+   2) "39.90000009167092543"
+```
+
+> geodist
+
+两地之间的距离：
+
+- **m** 表示单位为米。
+- **km** 表示单位为千米。
+- **mi** 表示单位为英里。
+- **ft** 表示单位为英尺。
+
+```shell
+127.0.0.1:6379[5]> geodist china:city beijing chongqing km # 查看上海到北京的直线距离 km
+"1409.8347"
+127.0.0.1:6379[5]> geodist china:city beijing shanghai km
+"1109.0541"
+
+```
+
+> georadius 以给定的经纬度为中心， 返回键包含的位置元素当中
+
+附近的人（获得所有附近的人的地址，定位）通过半径来查询
+
+获取指定数量的人，200
+
+```shell
+# 100,30 半径1000km在集合中的位置
+127.0.0.1:6379[5]> georadius china:city 100 30 1000 km
+1) "chongqing"
+2) "xian"
+127.0.0.1:6379[5]> georadius china:city 110 30 500 km withdist # 显示到中心的距离
+1) 1) "chongqing"
+   2) "341.9374"
+2) 1) "xian"
+   2) "483.8340"
+127.0.0.1:6379[5]> georadius china:city 110 30 500 km withcoord # 显示其他人的位置
+1) 1) "chongqing"
+   2) 1) "106.49999767541885376"
+      2) "29.52999957900659211"
+2) 1) "xian"
+   2) 1) "108.96000176668167114"
+      2) "34.25999964418929977"
+
+127.0.0.1:6379[5]> georadius china:city 110 30 500 km withdist count 1 # 限制显示1条
+1) 1) "chongqing"
+   2) "341.9374"
+
+```
+
+> georadiusbymember
+
+```shell
+# 找出指定元素周围的其他元素！
+127.0.0.1:6379[5]> georadiusbymember china:city beijing 1000 km
+1) "beijing"
+2) "xian"
+```
+
+> geohash
+
+改命令将返回11个字符的Geohash字符串
+
+```shell
+# 将二维的经纬度转换为一堆的字符串， 如果两个字符串越接近，那么距离越近
+127.0.0.1:6379[5]> geohash china:city beijing chongqing
+1) "wx44czxdqg0"
+2) "wm5xzrybty0"
+```
+
+> GEO 底层的实现原理其实就是Zset！我们可以使用Zset命令来操作geo!
+
+```shell
+127.0.0.1:6379[5]>  zrange china:city 0 -1 # 查看地图中全部元素
+1) "chongqing"
+2) "xian"
+3) "shenzhen"
+4) "hangzhou"
+5) "shanghai"
+6) "beijing"
+127.0.0.1:6379[5]> zrem china:city beijing # 移除地图指定元素
+(integer) 1
+
+```
 
 #### hyperloglog
 
-#### bitmaps
+HyperLogLog 是一种概率数据结构，用于对独特事物进行计数（从技术上讲，这指的是估计集合的基数）。通常计算唯一项目需要使用与您要计算的项目数量成比例的内存量，因为您需要记住过去已经看到的元素以避免多次计算它们。
 
+> 什么是基数
+
+A{1,3,5,7,8,1} B{1,3,5,7,8} 基数（不重复的元素） = 5，可以接受误差！
+
+> 简介
+
+HyperLogLog  基数统计的算法！
+
+有点：占用的内存是固定的，2^64不同的元素的技术，只需要12KB内存
+
+**网页的UV （一个人访问一个网站多次，但还是算作一个人）**
+
+传统的方式，set保存用户的id，然后就可以统计set中的元素数量作为判断！
+
+> 测试使用
+
+```shell
+127.0.0.1:6379[6]> PFadd mykey a b c d e f g h i j # 创建第一组元素 mykey
+(integer) 1
+127.0.0.1:6379[6]> Pfcount mykey # 统计 mykey 元素的基数数量
+(integer) 10
+127.0.0.1:6379[6]> Pfadd mykey2 i j z x c v b m
+(integer) 1
+127.0.0.1:6379[6]> pfcount mykey2
+(integer) 8
+127.0.0.1:6379[6]> pfmerge mykey3 mykey myke2 # 合并两组mykey mykey2 => mykey3 并集
+OK
+127.0.0.1:6379[6]> pfcount mykey3 # 查看并集数量！
+(integer) 14
+
+```
+
+#### Bitmaps
+
+> 位存储
+
+统计用户信息，活跃，不活跃！登录、未登录！
+
+Bitmaps位图，数据结构！都是操作二进制位来进行记录，就只有0和1两种状态
+
+```shell
+# 使用bitmap来记录周一到周日的打卡！
+周一：1 周二：0...周天 0
+127.0.0.1:6379[7]> setbit sign 0 1
+(integer) 0
+127.0.0.1:6379[7]> setbit sign 1 0
+(integer) 0
+127.0.0.1:6379[7]> setbit sign 3 0
+(integer) 0
+127.0.0.1:6379[7]> setbit sign 4 0
+(integer) 0
+127.0.0.1:6379[7]> setbit sign 5 1
+(integer) 0
+127.0.0.1:6379[7]> setbit sign 6 1
+(integer) 0
+127.0.0.1:6379[7]> setbit sign 7 0
+(integer) 0
+# 查看某一天是否有打卡
+127.0.0.1:6379[7]> getbit sign 1
+(integer) 0
+127.0.0.1:6379[7]> getbit sign 0
+(integer) 1
+# 统计操作，统计打卡天数
+127.0.0.1:6379[7]> bitcount sign
+(integer) 3
+
+```
+
+### 事务
+
+```shell
+redis 127.0.0.1:6379> MULTI            # 标记事务开始
+OK
+ 
+redis 127.0.0.1:6379> INCR user_id     # 多条命令按顺序入队
+QUEUED
+ 
+redis 127.0.0.1:6379> INCR user_id
+QUEUED
+ 
+redis 127.0.0.1:6379> INCR user_id
+QUEUED
+ 
+redis 127.0.0.1:6379> PING
+QUEUED
+ 
+redis 127.0.0.1:6379> EXEC             # 执行
+1) (integer) 1
+2) (integer) 2
+3) (integer) 3
+4) PONG
+==========================Watch 命令 - 监视一个(或多个) key==========================
+# 如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断。
+# 监视 key ，且事务成功执行
+redis 127.0.0.1:6379> WATCH lock lock_times
+OK
+redis 127.0.0.1:6379> MULTI
+OK
+redis 127.0.0.1:6379> SET lock "huangz"
+QUEUED
+redis 127.0.0.1:6379> INCR lock_times
+QUEUED
+redis 127.0.0.1:6379> EXEC
+1) OK
+2) (integer) 1
+
+# 监视 key ，且事务被打断
+redis 127.0.0.1:6379> WATCH lock lock_times
+OK
+redis 127.0.0.1:6379> MULTI
+OK
+redis 127.0.0.1:6379> SET lock "joe"        # 就在这时，另一个客户端修改了 lock_times 的值
+QUEUED
+redis 127.0.0.1:6379> INCR lock_times
+QUEUED
+redis 127.0.0.1:6379> EXEC                  # 因为 lock_times 被修改， joe 的事务执行失败
+(nil)
+==========================Unwatch 命令 - 取消 WATCH 命令对所有 key 的监视==========================
+redis 127.0.0.1:6379> WATCH lock lock_times
+OK
+redis 127.0.0.1:6379> UNWATCH
+OK
+==========================Discard 命令 - 取消事务==========================
+redis 127.0.0.1:6379> MULTI
+OK
+redis 127.0.0.1:6379> PING
+QUEUED
+redis 127.0.0.1:6379> SET greeting "hello"
+QUEUED
+redis 127.0.0.1:6379> DISCARD
+OK
+```
+
+
+
+### Jedis
+
+### SpringBoot整合
+
+### Redis.conf
+
+### Redis持久化
+
+### Redis主从复制
+
+### Redis缓存穿透和雪崩
