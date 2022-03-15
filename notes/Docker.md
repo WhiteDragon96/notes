@@ -1288,5 +1288,9 @@ docker run -d --name=webdav-aliyundriver --restart=always -p 8787:8080 -v /appda
 # JAVA_OPTS 可修改最大内存占用，比如 -e JAVA_OPTS="-Xmx512m" 表示最大内存限制为512m
 ```
 
+`bilibili自动抽奖`
 
+```shell
+https://github.com/shanmiteko/LotteryAutoScript
+```
 

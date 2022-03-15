@@ -1079,18 +1079,60 @@ CREATE TABLE `aco_breed_place_permit_number` (
 
 - /api/shengting-aco/breedplacespecies/selectSpecies  加个参数 permitNumberType 1-浙江省陆⽣野⽣动物⼈⼯繁育许可证 2-国家重点点保护陆⽣野⽣动物⼈⼯繁育许可证
 
-  
-
-
-
-
-
-
-
 
 
 ```
 以前有多个许可证编号
 生成两个许可证 没有许可证编号显示什么
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```sql
+CREATE TABLE `aco_species_category` (
+  `id` bigint(20) NOT NULL COMMENT '编号',
+  `name` varchar(32) DEFAULT NULL COMMENT '类别名称',
+  `parent_id` bigint(20) DEFAULT NULL COMMENT '父级别编号',
+  `parent_name` varchar(32) DEFAULT NULL COMMENT '父级别编号名称',
+  `ancestors` varchar(255) DEFAULT NULL COMMENT '祖级划编号',
+  `icon` varchar(255) DEFAULT NULL COMMENT '图标',
+  `category_level` int(2) DEFAULT NULL COMMENT '层级',
+  `sort` int(2) DEFAULT NULL COMMENT '排序',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `is_deleted` int(2) DEFAULT NULL COMMENT '是否已删除',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='动物类别';
+
+
+
+ALTER TABLE `shengting_aco`.`aco_species_maintenance` 
+ADD COLUMN `category_id` bigint(20) NULL COMMENT '类别id' AFTER `id`;
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

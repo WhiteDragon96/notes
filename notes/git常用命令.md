@@ -61,12 +61,26 @@
 ### 常规操作
 
 1. git push origin test 推送本地分支到远程仓库
+
 2. git rm -r --cached 文件/文件夹名字 取消文件被版本控制
+
 3. git reflog 获取执行过的命令
+
 4. git log --graph 查看分支合并图
+
 5. git merge --no-ff -m '合并描述' 分支名 不使用Fast forward方式合并，采用这种方式合并可以看到合并记录
+
 6. git check-ignore -v 文件名 查看忽略规则
+
 7. git add -f 文件名 强制将文件提交
+
+8. git pull --rebase origin master
+
+   - `--rebase`选项告诉`Git`把小红的提交移到同步了中央仓库修改后的`master`分支的顶部，如下图所示
+
+   ![git-workflow-svn-6.png](https://github.com/xirong/my-git/blob/master/images/git-workflow-svn-6.png?raw=true)
+
+   
 
 ### git创建项目仓库
 
