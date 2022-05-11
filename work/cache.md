@@ -71,7 +71,12 @@ docker run -e PARAMS="--spring.datasource.url=jdbc:mysql://47.114.105.19:8888/xx
 #### `阿里云挂载服务`
 
 ```shell
-docker run -d --name=webdav-aliyundriver --restart=always -p 8787:8080 -v /appdata/aliyundriver/aliyundriver:/etc/aliyun-driver/ -e TZ="Asia/Shanghai" -e ALIYUNDRIVE_REFRESH_TOKEN="4479b0f29d3945cdb277dd731364820e" -e ALIYUNDRIVE_AUTH_PASSWORD="tangcs123" -e JAVA_OPTS="-Xmx1g" zx5253/webdav-aliyundriver
+docker run -d --name=aliyundrive-webdav --restart=unless-stopped -p 6677:8080 \
+  -v /appdata/aliyundriver/:/etc/aliyundrive-webdav/ \
+  -e REFRESH_TOKEN='53a0456aacc849dfb7743ebfe75b6149' \
+  -e WEBDAV_AUTH_USER=tangcs \
+  -e WEBDAV_AUTH_PASSWORD=tangcs123 \
+  messense/aliyundrive-webdav
 
 java -jar webdav.jar --aliyundrive.refresh-token="b18b8b24bad34b7880166cc91fa56eb4"
 
@@ -84,9 +89,10 @@ java -jar webdav.jar --aliyundrive.refresh-token="b18b8b24bad34b7880166cc91fa56e
 #### 数据库
 
 ```
-
 docker run -d -p 3305:3306 -v /appdata/mysql/conf:/etc/mysql/conf.d -v /appdata/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=T@ng7167451959  --name mysql001 mysql:5.7.32
-5.7.32
+
+--version 8
+docker run -d -p 3304:3306 -v /appdata/mysql8/conf:/etc/mysql/conf.d -v /appdata/mysql8/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=T@ng7167451959  --name mysql8 mysql:8
 ```
 
 #### redis

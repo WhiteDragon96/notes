@@ -61,7 +61,7 @@ Docker利用容器技术，独立运行一个或者一组应用，通过镜像�
    # 4、安装docker相关的 docker-ce 社区 ee 企业版    
    yum install docker-ce docker-ce-cli containerd.io
    # 5、启动docker
-   systemctl start docker
+   
    # 6、判断是否启动成功
    docker version
    #7、hello-world
@@ -1264,24 +1264,27 @@ dockerfile 构建镜像
 
 ---
 
-**`epic`**
+#### `epic`
 
 ```shell
-docker run -it --name epic -e TZ=Asia/Shanghai --restart unless-stopped -v /appdata/epic:/User_Data luminoleon/epicgames-claimer -r 10:30 -a -ps SCT42461T86ZEIJOoskFirJMdmXboRFYX 
+docker run -it --name epic -e TZ=Asia/Shanghai --restart unless-stopped -v /appdata/epic:/User_Data luminoleon/epicgames-claimer -r 10:30 -a -ps SCserver酱
 ```
 
-**`bilibili-helper`**
+#### `bilibili-helper`
 
 ```shell
 docker run -d --name=bilibili-helper --restart unless-stopped -e CRON=true -e TZ=Asia/Shanghai -v /appdata/bilibili-config:/config  superng6/bilibili-helper:latest
 ```
 
-**`阿里云挂载服务`**
+#### `阿里云挂载服务`
 
 ```shell
-docker run -d --name=webdav-aliyundriver --restart=always -p 8787:8080 -v /appdata/aliyundriver/aliyundriver:/etc/aliyun-driver/ -e TZ="Asia/Shanghai" -e ALIYUNDRIVE_REFRESH_TOKEN="refreshToken" -e ALIYUNDRIVE_AUTH_PASSWORD="password" -e JAVA_OPTS="-Xmx1g" zx5253/webdav-aliyundriver
-
-本地启动：java -jar webdav.jar --aliyundrive.refresh-token="refreshToken"
+docker run -d --name=aliyundrive-webdav --restart=unless-stopped -p 6677:8080 \
+  -v /appdata/aliyundriver/:/etc/aliyundrive-webdav/ \
+  -e REFRESH_TOKEN='you refresh token' \
+  -e WEBDAV_AUTH_USER=username \
+  -e WEBDAV_AUTH_PASSWORD=t***3 \
+  messense/aliyundrive-webdav
 
 # /etc/aliyun-driver/ 挂载卷自动维护了最新的refreshToken，建议挂载
 # ALIYUNDRIVE_AUTH_PASSWORD 是admin账户的密码，建议修改
@@ -1292,5 +1295,47 @@ docker run -d --name=webdav-aliyundriver --restart=always -p 8787:8080 -v /appda
 
 ```shell
 https://github.com/shanmiteko/LotteryAutoScript
+```
+
+`启动ubuntu桌面环境`
+
+```shell
+docker run -d --name ubuntu-desktop-lxde-vnc -p 6080:80 -p 5900:5900 -e VNC_PASSWORD=T@ng7167451959 -v /appdata/shm:/dev/shm dorowu/ubuntu-desktop-lxde-vnc
+```
+
+#### `qinglong`
+
+```shell
+docker run -dit \
+  -v /appdata/qinglong:/ql/data \
+  -p 5757:5700 \
+  --name qinglong \
+  --hostname qinglong \
+  --restart unless-stopped \
+  whyour/qinglong:latest
+```
+
+#### `数据库`
+
+```shell
+docker run -d -p 3305:3306 -v /appdata/mysql/conf:/etc/mysql/conf.d -v /appdata/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=@@@@  --name mysql001 mysql:5.7.32
+
+--version 8
+docker run -d -p 3304:3306 -v /appdata
+:/etc/mysql/conf.d -v /appdata/mysql8/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=@@@@  --name mysql8 mysql:8
+```
+
+##### melody
+
+```shell
+docker run -d -p 5566:5566 --name melody -v /appdata/melody-profile:/app/backend/.profile foamzou/melody:latest
+```
+
+##### nps
+
+```shell
+docker run -d --name nps --net=host -v /appdata/nps/conf:/conf ffdfgdfg/nps
+docker run -d -p 20000-20010:20000-20010 -v /root/nps/conf:/conf --name=nps ffdfgdfg/nps
+
 ```
 
