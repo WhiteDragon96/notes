@@ -53,7 +53,10 @@ rmohr/activemq
 #### bilibili
 
 ```shell
-docker run -d --name=bilibili-helper-hyb --restart unless-stopped -v /appdata/bilibili-hyb-config:/config  superng6/bilibili-helper:latest
+docker run -d --name=bilibili-helper --restart unless-stopped -v /appdata/bilibili/config:/config  superng6/bilibili-helper:latest
+
+
+6564f3e7%2C1668306117%2C822d4%2A51
 ```
 
 #### `epic`
@@ -89,7 +92,7 @@ java -jar webdav.jar --aliyundrive.refresh-token="b18b8b24bad34b7880166cc91fa56e
 #### 数据库
 
 ```
-docker run -d -p 3305:3306 -v /appdata/mysql/conf:/etc/mysql/conf.d -v /appdata/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=T@ng7167451959  --name mysql001 mysql:5.7.32
+docker run -d -p 3305:3306 -v /appdata/mysql/config:/etc/mysql/conf.d -v /appdata/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=T@ng7167451959 -e TZ=Asia/Shanghai --name mysql5.7 mysql:5.7.32
 
 --version 8
 docker run -d -p 3304:3306 -v /appdata/mysql8/conf:/etc/mysql/conf.d -v /appdata/mysql8/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=T@ng7167451959  --name mysql8 mysql:8
@@ -98,7 +101,7 @@ docker run -d -p 3304:3306 -v /appdata/mysql8/conf:/etc/mysql/conf.d -v /appdata
 #### redis
 
 ```
-docker run -p 6379:6379 --name redis -v /appdata/redis/conf/redis.conf:/etc/redis/redis.conf -v /appdata/redis/data:/data -d redis redis-server /etc/redis/redis.conf --appendonly yes
+docker run -p 6378:6379 --name redis -v /appdata/redis/conf/redis.conf:/etc/redis/redis.conf -v /appdata/redis/data:/data -d redis redis-server /etc/redis/redis.conf --appendonly yes
 ```
 
 #### testspeed
@@ -1136,9 +1139,13 @@ ADD COLUMN `category_id` bigint(20) NULL COMMENT '类别id' AFTER `id`;
 
 
 
+### 问题管理整改
+
+1、添加一个待核查状态，完成 ->待核查   通过 = 完成 不通过 = 继续整改
 
 
 
+2、问题表添加整改时间，整改方案
 
 
 

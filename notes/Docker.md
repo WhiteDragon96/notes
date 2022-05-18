@@ -1325,17 +1325,33 @@ docker run -d -p 3304:3306 -v /appdata
 :/etc/mysql/conf.d -v /appdata/mysql8/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=@@@@  --name mysql8 mysql:8
 ```
 
-##### melody
+#### melody
 
 ```shell
 docker run -d -p 5566:5566 --name melody -v /appdata/melody-profile:/app/backend/.profile foamzou/melody:latest
 ```
 
-##### nps
+#### nps
 
 ```shell
 docker run -d --name nps --net=host -v /appdata/nps/conf:/conf ffdfgdfg/nps
-docker run -d -p 20000-20010:20000-20010 -v /root/nps/conf:/conf --name=nps ffdfgdfg/nps
-
 ```
+
+#### nginx
+
+```shell
+docker run --name nginx --net=host -v /appdata/nginx/nginx.conf:/etc/nginx/nginx.conf -v /appdata/nginx/log:/var/log/nginx -v /appdata/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf -v /appdata/nginx/html:/usr/share/nginx/html -d nginx
+```
+
+```shell
+docker run -d --net=host -v /appdata/nginx/:/var/log/nginx/ -v /appdata/nginx/nginx.conf:/etc/nginx/nginx.conf:ro --name nginx  nginx
+```
+
+#### halo
+
+```shell
+docker run -it -d --name halo -p 8090:8090 -v /appdata/halo:/root/.halo --net halo-net --restart=unless-stopped halohub/halo:1.5.3
+```
+
+
 
