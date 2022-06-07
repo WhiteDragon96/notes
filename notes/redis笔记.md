@@ -1430,3 +1430,4 @@ sentinel client-reconfig-script mymaster /var/redis/reconfig.sh
 2、限流降级
 
 3、数据预热
+
