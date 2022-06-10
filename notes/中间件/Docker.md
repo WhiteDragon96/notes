@@ -1355,3 +1355,14 @@ docker run -it -d --name halo -p 8090:8090 -v /appdata/halo:/root/.halo --net ha
 
 
 
+#### onenav
+
+> 书签管理器
+
+```shell
+docker run -itd --name="onenav" -p 4461:80 \
+    -v /appdata/onenav:/data/wwwroot/default/data \
+    --restart unless-stopped \
+    helloz/onenav:0.9.23
+```
+
