@@ -1321,7 +1321,7 @@ docker run -dit \
 docker run -d -p 3305:3306 -v /appdata/mysql/conf:/etc/mysql/conf.d -v /appdata/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=@@@@  --name mysql001 mysql:5.7.32
 
 --version 8
-docker run -d -p 3304:3306 -v /appdata
+docker run -d -p 3304:3306 -v /appdata/mysql8/conf
 :/etc/mysql/conf.d -v /appdata/mysql8/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=@@@@  --name mysql8 mysql:8
 ```
 

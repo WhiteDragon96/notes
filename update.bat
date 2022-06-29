@@ -1,11 +1,11 @@
 @echo off
 
-set/p message=请输入同步内容：
+set/p message=input commit message ：
 
 echo message : %message%
 
 git add .
-git commit -m '%message%'
+git commit -m %message%
 git push origin notes
 
 pause
