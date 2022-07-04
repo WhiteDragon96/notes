@@ -24,11 +24,16 @@
 ### 层次图
 ![](https://img-blog.csdn.net/20170905084526091?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTGl2ZW9yX0RpZQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
-
 ### List
+
+#### ArrayList  
+
 1、 最常用集合：ArrayList  </br>
  特点：ArrayList集合中元素存储的位置是连续的，所以查询起来会比较快捷，但是执行插入删除操作会比较麻烦一点，会引起其他元素位置的变化。
  注意：list中储存的是对象引用，而不是对象本身，如果对象变化，list中储存的也会变。
+
+
+
  ```Java
     User user = new User(1, "迪丽热巴", 18, new Date());
     List<User> userList = new ArrayList<User>();
@@ -36,7 +41,9 @@
     System.out.println(userList); // [User(id=1, username=迪丽热巴, ...)]
     user.setUsername("德玛西亚");
     System.out.println(userList); // [User(id=1, username=德玛西亚, ...)]
-```
+ ```
+#### LinkedList  
+
 2、与最常用集合相反的集合：LinkedList  </br>
 LinkedList与ArrayList是互补的，所以ArrayList的优点就是LinkedList的缺点，ArrayList的缺点就是LinkedList的优点。 </br>
 特点：LinkedList中元素位置是任意的，所以执行插入删除操作效率较高，查询效率较低。
@@ -56,6 +63,12 @@ LinkedList要头部插入才能体现它的效率
 
 3、与一般集合都相反的集合：Vector </br>
 特点：多个线程同时访问不会发生不确定的结果，但是它的效率会比较低，如果要考虑线程安全的话可以用它。
+
+#### Vector
+
+#### CopyOnWriteArrayList
+
+
 
 ### Set
 1、Set中最常用的集合：HashSet  </br>
