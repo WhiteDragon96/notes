@@ -11,3 +11,7 @@ synchronized：【绳捆莱斯特】 [ˈsɪŋkrənaɪzd] (使)同步，在时间
 executor：【伊克塞Q特】 [ɪɡˈzekjətə(r)] 执行器;
 
 factory：【】[ˈfæktri] 工厂
+
+explain :  【】[ɪkˈspleɪn] 解释
+
+arthas:  	【阿尔撒斯】
