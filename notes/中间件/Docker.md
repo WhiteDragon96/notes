@@ -1366,3 +1366,14 @@ docker run -itd --name="onenav" -p 4461:80 \
     helloz/onenav:0.9.23
 ```
 
+
+
+#### RabbitMQ
+
+```shell
+docker run -d \
+-v /appdata/rabbitMQ/data:/var/lib/rabbitmq \
+-p 5672:5672 -p 15672:15672 --name rabbitmq --restart=always \
+--hostname myRabbit rabbitmq:3-management
+```
+
