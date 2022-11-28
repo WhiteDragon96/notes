@@ -1,0 +1,21 @@
+{
+	"version": "",
+	"projectName": "",
+	"projectType": "pure",
+	"corePath": "C:\\Users\\neu\\AppData\\Roaming\\LuatIDE\\LuatideCore\\Air72XUX_CORE\\LuatOS-Air_V4018_RDA8910_BT_NOLVGL_FLOAT.pac",
+	"libPath": "C:\\Users\\neu\\AppData\\Roaming\\LuatIDE\\LuatideLib\\Air72XUX_LIB\\V2.4.0\\lib",
+	"moduleModel": "",
+	"appFile": [
+		".vscode",
+		".vscode\\launch.json",
+		"lua.lua",
+		"LuaTask.lua",
+		"luatos.exe",
+		"luat_uart.dll",
+		"SMSForwarder.lua",
+		"sys.lua"
+	],
+	"modulePort": "",
+	"ignore": [],
+	"simulatorRun": "disable"
+}

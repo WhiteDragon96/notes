@@ -2,6 +2,10 @@
 
 
 
+
+
+
+
 ### docker安装
 
 #### docker的基本组成
@@ -1376,4 +1380,149 @@ docker run -d \
 -p 5672:5672 -p 15672:15672 --name rabbitmq --restart=always \
 --hostname myRabbit rabbitmq:3-management
 ```
+
+
+
+#### RabbitMQ 集群
+
+```shell
+# 搭建 主节点和从节点
+#rabbitmqCluster01 主节点
+docker run -d --hostname rabbitmq01 --name rabbitmqCluster01 -v /appdata/rabbitmq01:/var/lib/rabbitmq -p 15672:15672 -p 5672:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitmqCookie' rabbitmq:3.7-management
+
+#rabbitmqCluster02 从节点
+docker run -d --hostname rabbitmq02 --name rabbitmqCluster02 -v /appdata/rabbitmq02:/var/lib/rabbitmq -p 7002:15672 -p 5673:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitmqCookie'  --link rabbitmqCluster01:rabbitmq01 rabbitmq:3.7-management
+
+#rabbitmqCluster03 从节点
+docker run -d --hostname rabbitmq03 --name rabbitmqCluster03 -v /appdata/rabbitmq03:/var/lib/rabbitmq -p 8002:15672 -p 5674:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitmqCookie'  --link rabbitmqCluster01:rabbitmq01 --link rabbitmqCluster02:rabbitmq02  rabbitmq:3.7-management
+
+# 2、进入rabbitmqCluster02 节点和 rabbitmqCluster03 节点
+rabbitmqctl stop_app
+rabbitmqctl reset
+#rabbitmq01为rabbitmqCluster01容器中的hostname
+rabbitmqctl join_cluster --ram rabbit@rabbitmq01
+rabbitmqctl start_app
+# 执行完后在任意节点查看集群状态
+rabbitmqctl cluster_status
+
+# 3、配置镜像集群的策略
+进入 主节点 
+# 添加策略
+rabbitmqctl set_policy ha-all "^" '{"ha-mode":"all","ha-sync-mode":"automatic"}'
+   
+# 查看策略
+rabbitmqctl list_policies
+
+```
+
+- ha-mode: all，在集群中所有的节点上进行镜像
+- ha-sync-mode: automatic，在集群节点宕机重新连接后自动同步
+
+https://www.cnblogs.com/cheyunhua/p/16504821.html
+
+##### nginx负载
+
+配置nginx_rabbitmq.conf
+
+```
+# user  nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+	
+	proxy_redirect          off;
+	proxy_set_header        Host $host;
+	proxy_set_header        X-Real-IP $remote_addr;
+	proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+	client_max_body_size    10m;
+	client_body_buffer_size   128k;
+	proxy_connect_timeout   5s;
+	proxy_send_timeout      5s;
+	proxy_read_timeout      5s;
+	proxy_buffer_size        4k;
+	proxy_buffers           4 32k;
+	proxy_busy_buffers_size  64k;
+	proxy_temp_file_write_size 64k;
+	#rabbitmq管理界面
+	upstream rabbitManage {
+		server 192.168.37.101:15672;
+		server 192.168.37.101:15673;
+		server 192.168.37.101:15674;
+	}
+	server {
+        listen       15675;
+        server_name  192.168.37.101; 
+        location / {  
+            proxy_pass   http://rabbitManage;
+            index  index.html index.htm;  
+        }  
+
+    }
+}
+# rabbitmq通信
+stream{
+	upstream rabbitTcp{
+        server 192.168.37.101:5672;
+        server 192.168.37.101:5673;
+	server 192.168.37.101:5674;
+    }
+
+    server {
+        listen 5675;
+        proxy_pass rabbitTcp;
+    }
+}
+
+```
+
+启动nginx
+
+```shell
+docker run -it -d --name nginxRabbitmq -v /root/rabbitmqcluster/nginx_rabbitmq.conf:/etc/nginx/nginx.conf  --privileged --net=host nginx
+```
+
+
+
+#### canal
+
+##### canal-admin
+
+```shell
+docker run -it --name canal-admin \
+-e server.port=8089 \
+-e canal.adminUser=tangcs \
+-e canal.adminPasswd=tangcs123 \
+-e spring.datasource.address=119.91.204.244:3305 \
+-e spring.datasource.database=canal_manager \
+-e spring.datasource.username=root \
+-e spring.datasource.password=xx \
+-p 8089:8089 \
+-d canal/canal-admin 
+```
+
+
 

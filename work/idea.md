@@ -40,6 +40,25 @@
     </insert>
   ```
 
+#### SUBSTRING_INDEX 
+
+按分隔符截取字符串
+
+返回一个 str 的子字符串，在 delimiter 出现 count 次的位置截取。
+如果 count > 0，从则左边数起，且返回位置前的子串；
+如果 count < 0，从则右边数起，且返回位置后的子串。
+
+delimiter 是大小写敏感，且是多字节安全的。
+
+```sql
+SUBSTRING_INDEX(str, delimiter, count)
+mysql> SELECT SUBSTRING_INDEX('www.mysql.com', '.', 2); -> 'www.mysql'
+
+mysql> SELECT SUBSTRING_INDEX('www.mysql.com', '.', -2); -> 'mysql.com'
+```
+
+
+
 ### Aspect
 
 
@@ -120,9 +139,7 @@ redis key命名时为什么防止重复一般 前缀+key,前缀名名时用：�
   ```
   Lombok @Builder注解支持，易维护
 
-
-
-#### CPU占用过高排查方法
+### CPU占用过高排查方法
 
 ```
 1.先用top命令,找到cpu占用最高的进程 PID
@@ -136,5 +153,55 @@ redis key命名时为什么防止重复一般 前缀+key,前缀名名时用：�
 5.将查找到的 线程占用最高的 tid 第二步查到的线程 29108 转成16进制 — 71b4
 
 6.打开下载好的 xxx.log 通过 查找方式 找到 对应线程 进行排查
+```
+
+
+
+### 通过thumbnailator压缩图片
+
+```xml
+1、引入依赖
+<dependency>
+   <groupId>net.coobird</groupId>
+   <artifactId>thumbnailator</artifactId>
+   <version>0.4.8</version>
+</dependency>
+
+// scale: 缩小的倍数，1代表保持原有的大小(默认1) 范围 1 - 0
+// outputQuality : 压缩的质量，1代表保持原有的质量(默认1) 范围 1 - 0
+ 
+Thumbnails.of(new String[]{"源图片路径.jpg"}).scale(1D).outputQuality(0.5).toFile("输出路径.jpg");
+```
+
+#### thumbnailator 应发 OutOfMemoryError: Java heap space
+
+thumbnailator库对图片的要求其实是极其严苛的，对图片的处理会消耗大量的内存，Thumbnailator需要加载原始图像，大致需要至少两倍的宽度*高度* 4个字节的堆空间。例如，一个20M像素的图像需要160 MB的堆。这个数字计算出来相当惊人了，一般对于JVM的内存会设置在1G左右，然而单次请求一个图片裁剪接口就占用了大量的内存！！！
+
+解决方法：
+
+​	1、调整JVM的内存大小，2、可以对原图片做限制，大于多少像素提示用户图片不符合。或者你也可以使用其他的第三方库，例如：ImageMagick
+
+
+
+### springboot集成mybatis-plus
+
+- 引入 mysql：mysql-connector-java，连接池Druid：druid-spring-boot-starter，Mybatis-plus：mybatis-plus-boot-starter
+- 配置：添加MapperScan，配置driver-class-name，datasource.type
+- xml中要配置打包文件加上xml，不然找不到
+
+```xml
+	<build>	
+		<resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
 ```
 
